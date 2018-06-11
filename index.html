@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
+    <meta charset="UTF-8">
     <link rel='stylesheet' type='text/css' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'>
     <link rel='stylesheet' type='text/css' href='./dist/main.css'>
 
@@ -19,10 +20,11 @@
     </div>
 
     <script src='./dist/data/donut.js'></script>
+    <script src='./dist/data/linechart.js'></script>
     <script src='./dist/gviz-src.js'></script>
     <script>
       console.log(gViz);
-      callDonut(gViz);
+      callLine(gViz, 0);
     </script>
   </body>
 </html>

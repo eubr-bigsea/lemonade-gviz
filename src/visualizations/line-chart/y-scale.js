@@ -1,5 +1,9 @@
+import * as d3 from 'd3';
+import $ from 'jquery';
+import shared from '../../shared/shared';
+
 // Initialize the visualization class
-gViz.vis.lineChart.yScale = function () {
+const yScale = function () {
   "use strict";
 
   // Get attributes values
@@ -61,7 +65,7 @@ gViz.vis.lineChart.yScale = function () {
           _var.y.domain(_var.yBounds).nice();
 
           // Set format
-          _var.yFormat = gViz.shared.helpers.number.parseFormat(_var.data == null ? null : _var.data.y);
+          _var.yFormat = shared.helpers.number.parseFormat(_var.data == null ? null : _var.data.y);
 
           // Get x axis ticks
           var bins = d3.max([3, parseInt(_var.height / 25, 10)]);
@@ -72,7 +76,7 @@ gViz.vis.lineChart.yScale = function () {
           // Update margin left and width
           if(data.length > 0) {
             _var.width += _var.margin.left;
-            _var.margin.left = 5 + d3.max(_var.yAxis.scale().ticks().map(function(d) { return gViz.shared.helpers.text.getSize(_var.yFormat(d)); }));
+            _var.margin.left = 5 + d3.max(_var.yAxis.scale().ticks().map(function(d) { return shared.helpers.text.getSize(_var.yFormat(d)); }));
             _var.width -= _var.margin.left;
           }
 
@@ -112,3 +116,5 @@ gViz.vis.lineChart.yScale = function () {
 
   return main;
 };
+
+export default yScale;

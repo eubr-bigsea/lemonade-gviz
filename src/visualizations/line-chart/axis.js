@@ -1,5 +1,9 @@
+import * as d3 from 'd3';
+import $ from 'jquery';
+import shared from '../../shared/shared';
+
 // Initialize the visualization class
-gViz.vis.lineChart.axis = function () {
+const axis = function () {
   "use strict";
 
   // Get attributes values
@@ -108,10 +112,4 @@ gViz.vis.lineChart.axis = function () {
   return main;
 };
 
-function __range__(left, right, inclusive) {
-  var range = [];
-  var ascending = left < right;
-  var end = !inclusive ? right : ascending ? right + 1 : right - 1;
-  for (var i = left; ascending ? i < end : i > end; ascending ? i++ : i--) { range.push(i); }
-  return range;
-}
+export default axis;

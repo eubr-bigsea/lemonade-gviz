@@ -1,5 +1,9 @@
+import * as d3 from 'd3';
+import $ from 'jquery';
+import shared from '../../shared/shared';
+
 // Initialize the visualization class
-gViz.vis.lineChart.create = function () {
+const create = function () {
   "use strict";
 
   // Get attributes values
@@ -43,39 +47,41 @@ gViz.vis.lineChart.create = function () {
           _var.g.attr("transform", `translate(${_var.margin.left},${_var.margin.top})`);
 
           // Draw shadow
-          gViz.shared.visualComponents.shadow()
-            ._var(_var)
-            .wrap(_var.wrap)
-            .id(_var.shadowId)
-            .run();
+            shared.visualComponents.shadow()
+              ._var(_var)
+              .wrap(_var.wrap)
+              .id(_var.shadowId)
+              .run();
 
-          break;
+            break;
+        }
       }
-    }
 
-    return _var;
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var', 'animation'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = _ => main('run');
+
+    return main;
   };
 
-  // Exposicao de variaveis globais
-  ['_var', 'animation'].forEach(function (key) {
-
-    // Attach variables to validation function
-    validate[key] = function (_) {
-      if (!arguments.length) { eval(`return ${key}`); }
-      eval(`${key} = _`);
-      return validate;
-    };
-
-    // Attach variables to main function
-    return main[key] = function (_) {
-      if (!arguments.length) { eval(`return ${key}`); }
-      eval(`${key} = _`);
-      return main;
-    };
-  });
-
-  // Executa a funcao chamando o parametro de step
-  main.run = _ => main('run');
-
-  return main;
-};
+export default create;

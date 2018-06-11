@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 
 // Initialize the visualization class
-var tooltip = function() {
+const tooltip = function() {
   "use strict";
 
   // Get attributes values
-  var _var        = undefined;
+  var _var        = null;
   var action      = "show";
   var body        = "#333";
   var borderColor = "#333";
