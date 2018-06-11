@@ -1,0 +1,17 @@
+.scale-wrapper {
+  $rect-width: 100px;
+
+  .scale-rect {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 6px;
+  }
+
+  .legend-right {
+    margin-left: calc(#{$rect-width} + 10px);
+  }
+}
+
+.full-height {
+  height: 100%;
+}

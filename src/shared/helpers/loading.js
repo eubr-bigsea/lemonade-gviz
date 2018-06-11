@@ -24,7 +24,7 @@ const loading = {
     loading.queue.pop();
 
     // Hide loading div only if the queue has finished
-    if (this.queue.length === 0) {
+    if (loading.queue.length === 0) {
       $(".loading-div").css('display', 'none');
       $("body").removeClass("no-scroll");
     }

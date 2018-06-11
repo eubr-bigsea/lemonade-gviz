@@ -1,5 +1,9 @@
+import * as d3 from 'd3';
+import $ from 'jquery';
+import shared from '../../shared/shared';
+
 // Initialize the visualization class
-gViz.vis.donutChart.misc = function () {
+const misc = function () {
   "use strict";
 
   // Get attributes values
@@ -103,7 +107,7 @@ gViz.vis.donutChart.misc = function () {
                 legendStr += "<span class='"+shape+"' style='background-color:"+mutedColor+"; margin-right: -2px;'></span>";
               }
               legendStr += "<span class='"+shape+"' style='background-color:"+fillColor+" ; '></span><span class='name'>";
-              legendStr += gViz.shared.helpers.text.replaceVariables(legend, d);
+              legendStr += shared.helpers.text.replaceVariables(legend, d);
               legendStr += "</span>";
 
               // If the legend str wasnt computed, add to legend
@@ -149,3 +153,5 @@ gViz.vis.donutChart.misc = function () {
 
   return main;
 };
+
+export default misc;

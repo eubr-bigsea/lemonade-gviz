@@ -1,5 +1,13 @@
+import * as d3 from 'd3';
+import initialize from './initialize';
+import create from './create';
+import elements from './elements';
+import misc from './misc';
+import parse from './parse';
+import shared from '../../shared/shared';
+
 // Initialize the visualization class
-gViz.vis.donutChart = function () {
+const donutChart = function () {
   "use strict";
 
   // Auxiliar Functions
@@ -8,7 +16,7 @@ gViz.vis.donutChart = function () {
   var action = 'build';
   var animation = 900;
   var container = null;
-  var colors = { main: gViz.shared.helpers.colors.main, d3: d3.scaleOrdinal(d3.schemeCategory10) };
+  var colors = { main: shared.helpers.colors.main, d3: d3.scaleOrdinal(d3.schemeCategory10) };
   var data = [];
   var height = null;
   var margin = { top: 10, right: 10, bottom: 10, left: 10};
@@ -51,7 +59,7 @@ gViz.vis.donutChart = function () {
 
           // Initializing
           if (!_var) { _var = {};  }
-          _var = gViz.vis.donutChart.initialize()
+          _var = initialize()
             ._var(_var)
             ._id((_var._id != null) ? _var._id : _id)
             .animation(animation)
@@ -69,7 +77,7 @@ gViz.vis.donutChart = function () {
         case 'parse':
 
           // Creating wrappers
-          _var = gViz.vis.donutChart.parse()
+          _var = parse()
             ._var(_var)
             .run();
           break;
@@ -79,7 +87,7 @@ gViz.vis.donutChart = function () {
         case 'create':
 
           // Creating wrappers
-          _var = gViz.vis.donutChart.create()
+          _var = create()
             ._var(_var)
             .run();
           break;
@@ -88,9 +96,9 @@ gViz.vis.donutChart = function () {
         case 'elements':
 
           // Creating wrappers
-          _var = gViz.vis.donutChart.elements()
+          _var = elements()
             ._var(_var)
-            .components(gViz.vis.donutChart)
+            .components(donutChart)
             .data(_var.data.data)
             .run();
           break;
@@ -99,7 +107,7 @@ gViz.vis.donutChart = function () {
         case 'misc':
 
           // Running
-          _var = gViz.vis.donutChart.misc()
+          _var = misc()
             ._var(_var)
             .components(gViz.vis.donutChart)
             .run();
@@ -136,5 +144,6 @@ gViz.vis.donutChart = function () {
   main.run = function (_) { return main(_); };
 
   return main;
+};
 
-}
+export default donutChart;

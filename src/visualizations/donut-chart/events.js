@@ -1,5 +1,9 @@
+import * as d3 from 'd3';
+import $ from 'jquery';
+import shared from '../../shared/shared';
+
 // Initialize the visualization class
-gViz.vis.donutChart.events = function () {
+const events = function () {
   "use strict";
 
   // Get attributes values
@@ -67,7 +71,7 @@ gViz.vis.donutChart.events = function () {
                 .attr('x', 0)
                 .attr('y', node.data.img == null || node.data.img === '' ? -20 : -45)
                 .attr('text-anchor', 'middle')
-                .text(gViz.shared.helpers.text.replaceVariables(_var.data.tooltip.title, tooltipObj))
+                .text(shared.helpers.text.replaceVariables(_var.data.tooltip.title, tooltipObj))
                 .style('opacity', 0)
                 .transition()
                   .style('opacity', 1)
@@ -208,3 +212,5 @@ gViz.vis.donutChart.events = function () {
 
   return main;
 };
+
+export default events;

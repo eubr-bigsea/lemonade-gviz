@@ -1,5 +1,8 @@
+import * as d3 from 'd3';
+import $ from 'jquery';
+
 // Initialize the visualization class
-gViz.vis.donutChart.parse = function () {
+const parse = function () {
   "use strict";
 
   // Get attributes values
@@ -78,3 +81,5 @@ gViz.vis.donutChart.parse = function () {
 
   return main;
 };
+
+export default parse;
