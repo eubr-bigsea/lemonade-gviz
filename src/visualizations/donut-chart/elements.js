@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import $ from 'jquery';
+import events from './events';
 
 // Initialize the visualization class
 const elements = function () {
@@ -7,7 +8,6 @@ const elements = function () {
 
   // Get attributes values
   var _var       = null;
-  var components = null;
   var data       = null;
 
   // Validate attributes
@@ -64,10 +64,9 @@ const elements = function () {
             _var.hovered = e;
 
             // Mouseover event
-            components.events()
+            events()
               ._var(_var)
               .action("mouseover")
-              .components(components)
               .node(e)
               .run();
 
@@ -77,10 +76,9 @@ const elements = function () {
             _var.hovered = null;
 
             // Mouseout event
-            components.events()
+            events()
               ._var(_var)
               .action("mouseout")
-              .components(components)
               .run();
 
           })
@@ -136,7 +134,7 @@ const elements = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','components','data'].forEach(function (key) {
+  ['_var','data'].forEach(function (key) {
 
     // Attach variables to validation function
     validate[key] = function (_) {

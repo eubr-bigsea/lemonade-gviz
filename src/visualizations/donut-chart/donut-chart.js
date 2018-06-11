@@ -4,6 +4,7 @@ import create from './create';
 import elements from './elements';
 import misc from './misc';
 import parse from './parse';
+import events from './events';
 import shared from '../../shared/shared';
 
 // Initialize the visualization class
@@ -98,7 +99,6 @@ const donutChart = function () {
           // Creating wrappers
           _var = elements()
             ._var(_var)
-            .components(donutChart)
             .data(_var.data.data)
             .run();
           break;
@@ -109,7 +109,6 @@ const donutChart = function () {
           // Running
           _var = misc()
             ._var(_var)
-            .components(gViz.vis.donutChart)
             .run();
           break;
 

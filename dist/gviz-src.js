@@ -4,7 +4,7 @@
   (global.gViz = factory());
 }(this, (function () { 'use strict';
 
-  var version = "0.0.0+master.db2f8ea";
+  var version = "0.0.0+master.4aaf144";
 
   var version$1 = "5.4.0";
 
@@ -7236,7 +7236,7 @@
     };
   }
 
-  var locale$1;
+  var locale;
   var format;
   var formatPrefix;
 
@@ -7248,10 +7248,10 @@
   });
 
   function defaultLocale(definition) {
-    locale$1 = formatLocale(definition);
-    format = locale$1.format;
-    formatPrefix = locale$1.formatPrefix;
-    return locale$1;
+    locale = formatLocale(definition);
+    format = locale.format;
+    formatPrefix = locale.formatPrefix;
+    return locale;
   }
 
   function precisionFixed(step) {
@@ -13380,7 +13380,7 @@
     return Math.floor(+d / 1000);
   }
 
-  var locale$2;
+  var locale$1;
   var timeFormat;
   var timeParse;
   var utcFormat;
@@ -13398,12 +13398,12 @@
   });
 
   function defaultLocale$1(definition) {
-    locale$2 = formatLocale$1(definition);
-    timeFormat = locale$2.format;
-    timeParse = locale$2.parse;
-    utcFormat = locale$2.utcFormat;
-    utcParse = locale$2.utcParse;
-    return locale$2;
+    locale$1 = formatLocale$1(definition);
+    timeFormat = locale$1.format;
+    timeParse = locale$1.parse;
+    utcFormat = locale$1.utcFormat;
+    utcParse = locale$1.utcParse;
+    return locale$1;
   }
 
   var isoSpecifier = "%Y-%m-%dT%H:%M:%S.%LZ";
@@ -28276,6 +28276,29 @@
     }
   };
 
+  // Default user locale
+  const userLocale = 'en-US';
+
+  // Get user locale function
+  const getUserLocale = function () {
+    // Get user locale
+    this.userLocale = window.navigator.userLanguage || window.navigator.language;
+
+    // Validate locale
+    const number = 0;
+    try {
+      return number.toLocaleString(userLocale);
+    }
+    catch (e) {
+      return this.userLocale = 'en-US';
+    }
+  };
+
+  // Helper to locale string
+  const locale$2 = function (d) {
+    return d.toLocaleString(userLocale);
+  };
+
   // Default number format
   const numberFormat = d => {
     if(d >= 1000000000 || d <= -1000000000) { return (format(".2s")(d).replace('G', 'B')); }
@@ -28299,7 +28322,7 @@
 
       // Get format
       fmt = numberFormat;
-      if(axis.format === 'locale') { fmt = locale; }
+      if(axis.format === 'locale') { fmt = locale$2; }
       else if(axis.format != null && axis.format != "") { fmt = format(axis.format); }
     }
 
@@ -28327,6 +28350,9 @@
 
   // Helpers numbers
   const number$4 = {
+    userLocale,
+    getUserLocale,
+    locale: locale$2,
     format: format$1,
     numberFormat,
     parseFormat,
@@ -29405,11 +29431,217 @@
   };
 
   // Initialize the visualization class
+  const events = function () {
+
+    // Get attributes values
+    var _var       = null;
+    var action     = 'mouseover';
+    var node       = null;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Run code
+          case 'run':
+
+            // Select groups
+            var groups = _var.g.selectAll(".chart-elements").selectAll(".element-group");
+            var arcs   = _var.g.selectAll(".chart-elements").selectAll(".element-group").selectAll(".node-arc");
+
+            switch (action) {
+
+              case 'mouseover':
+
+                // Update arc size
+                //
+                var bigArc = arc()
+                  .outerRadius(_var.size + 5)
+                  .innerRadius(_var.size - _var.radius - 5);
+
+                // Fade arcs and add drop shadow
+                arcs.transition()
+                  .attr("d", function(g) { return g.data.id === node.data.id ? bigArc(g) : _var.arc(g); })
+                  .style('fill', function(g) { return g.data.id === node.data.id ? g.data.color : g.data._color; })
+                  .style('stroke', function(g) { return g.data.id === node.data.id ? g.data.color : "#FFF"; })
+                  .style('opacity', function(g) { return g.data.id === node.data.id  ? 1 : 0.3; })
+                  .style("filter", function(g) { return g.data.id === node.data.id ? "url(#"+_var.shadowId+")" : ""; });
+
+                // Initialize tooltip object
+                var tooltipObj = {};
+
+                // Set node attributes to tooltip obj
+                Object.keys(node.data).forEach(function(k) { tooltipObj[k] = node.data[k]; });
+
+                // Draw center title
+                var centerTitle = _var.g.selectAll("text.center-title").data(["center-title"]);
+                centerTitle.exit().remove();
+                centerTitle = centerTitle.enter().append('text').attr("class", "center-title").merge(centerTitle);
+                centerTitle
+                  .style('fill', node.data.color)
+                  .attr('x', 0)
+                  .attr('y', node.data.img == null || node.data.img === '' ? -20 : -45)
+                  .attr('text-anchor', 'middle')
+                  .text(shared.helpers.text.replaceVariables(_var.data.tooltip.title, tooltipObj))
+                  .style('opacity', 0)
+                  .transition()
+                    .style('opacity', 1);
+
+                // Draw center image
+                var centerImage = _var.g.selectAll(".center-image").data(node.data.img == null || node.data.img === '' ? [] : ["center-value"]);
+                centerImage.exit().remove();
+                centerImage = centerImage.enter().append('image').attr("class", "center-image").merge(centerImage);
+                centerImage
+                  .attr("xlink:href", node.data.img)
+                  .attr("width", 65)
+                  .attr("height", 65)
+                  .attr('x', -30)
+                  .attr('y', -35)
+                  .style('opacity', 0)
+                  .transition()
+                    .style('opacity', 1);
+
+                // Draw center value
+                var centerValue = _var.g.selectAll("text.center-value").data(["center-value"]);
+                centerValue.exit().remove();
+                centerValue = centerValue.enter().append('text').attr("class", "center-value").merge(centerValue);
+                centerValue
+                  .style('fill', node.data.color)
+                  .attr('x', 0)
+                  .attr('y', node.data.img == null || node.data.img === '' ? 20 : 60)
+                  .attr('text-anchor', 'middle')
+                  .text(node.data[_var.metric] != null ? _var.format(+node.data[_var.metric]) : "No value")
+                  .style('opacity', 0)
+                  .transition()
+                    .style('opacity', 1);
+
+                // Draw center percentage
+                var centerPercentage = _var.g.selectAll("text.center-percentage").data(_var.data.tooltip.hasPercentage === true ? [node] : []);
+                centerPercentage.exit().remove();
+                centerPercentage = centerPercentage.enter().append('text').attr("class", "center-percentage").merge(centerPercentage);
+                centerPercentage
+                  .attr('x', 0)
+                  .attr('y', node.data.img == null || node.data.img === '' ? 55 : 95)
+                  .attr('text-anchor', 'middle')
+                  .text(node.data[_var.metric] != null ? format('.2')(+node.data[_var.metric] / +_var.data[_var.metric].total * 100) + "%" : "No value")
+                  .style('opacity', 0)
+                  .transition()
+                    .style('opacity', 1);
+
+                break;
+
+              case 'mouseout':
+
+                // Reset arcs and links opacity
+                arcs.transition()
+                  .style('fill', function(g) { return g.data._color; })
+                  .style('stroke', function(g) { return g.data._color; })
+                  .style('opacity', 1)
+                  .style('filter', '')
+                  .attr("d", _var.arc);
+
+                // Set node
+                node = _var.data[_var.metric];
+
+                // Draw center title
+                var centerTitle = _var.g.selectAll("text.center-title").data(["center-title"]);
+                centerTitle.exit().remove();
+                centerTitle = centerTitle.enter().append('text').attr("class", "center-title").merge(centerTitle);
+                centerTitle
+                  .style('fill', _var.data != null && node != null && node.color != null ? node.color : "#666" )
+                  .attr('y', 0)
+                  .attr('y', -20)
+                  .attr('text-anchor', 'middle')
+                  .text(_var.data != null && node != null && node.title != null ? node.title : "No Title")
+                  .style('opacity', 0)
+                  .transition()
+                    .style('opacity', 1);
+
+                // Remove center image
+                _var.g.selectAll(".center-image").transition().style('opacity', 0).remove();
+
+                // Draw center value
+                var centerValue = _var.g.selectAll("text.center-value").data(["center-value"]);
+                centerValue.exit().remove();
+                centerValue = centerValue.enter().append('text').attr("class", "center-value").merge(centerValue);
+                centerValue
+                  .style('fill', _var.data != null && node != null && node.color != null ? node.color : "#666" )
+                  .attr('y', 0)
+                  .attr('y', 20)
+                  .attr('text-anchor', 'middle')
+                  .text(_var.data != null && node != null ? node._value : "No value")
+                  .style('opacity', 0)
+                  .transition()
+                    .style('opacity', 1);
+
+                // Draw center percentage
+                var centerPercentage = _var.g.selectAll("text.center-percentage").data([]);
+                centerPercentage.exit().remove();
+                centerPercentage = centerPercentage.enter().append('text').attr("class", "center-percentage").merge(centerPercentage);
+                centerPercentage
+                  .style('opacity', 0)
+                  .transition()
+                    .style('opacity', 1);
+
+                break;
+
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','action','components','node','nodeSel'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = function (_) {
+      return main('run');
+    };
+
+    return main;
+  };
+
+  // Initialize the visualization class
   const elements = function () {
 
     // Get attributes values
     var _var       = null;
-    var components = null;
     var data       = null;
 
     // Validate attributes
@@ -29466,10 +29698,9 @@
               _var.hovered = e;
 
               // Mouseover event
-              components.events()
+              events()
                 ._var(_var)
                 .action("mouseover")
-                .components(components)
                 .node(e)
                 .run();
 
@@ -29479,10 +29710,9 @@
               _var.hovered = null;
 
               // Mouseout event
-              components.events()
+              events()
                 ._var(_var)
                 .action("mouseout")
-                .components(components)
                 .run();
 
             });
@@ -29538,7 +29768,7 @@
     };
 
     // Exposicao de variaveis globais
-    ['_var','components','data'].forEach(function (key) {
+    ['_var','data'].forEach(function (key) {
 
       // Attach variables to validation function
       validate[key] = function (_) {
@@ -29880,7 +30110,6 @@
             // Creating wrappers
             _var = elements()
               ._var(_var)
-              .components(donutChart)
               .data(_var.data.data)
               .run();
             break;
@@ -29891,7 +30120,6 @@
             // Running
             _var = misc()
               ._var(_var)
-              .components(gViz.vis.donutChart)
               .run();
             break;
 
@@ -29928,14 +30156,14 @@
     return main;
   };
 
-  const visualizations = {
+  const vis = {
     donutChart,
   };
 
   /** @namespace */
   const gViz$1 = {
     shared,
-    visualizations,
+    vis,
     NAME: 'gViz',
     VERSION: version,
   };

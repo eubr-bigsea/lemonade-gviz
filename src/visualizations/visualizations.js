@@ -1,7 +1,7 @@
 import donutChart from './donut-chart/donut-chart';
 
-const visualizations = {
+const vis = {
   donutChart,
 };
 
-export default visualizations;
+export default vis;

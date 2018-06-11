@@ -1,11 +1,11 @@
 import { version } from '../package.json';
 import shared from './shared/shared';
-import visualizations from './visualizations/visualizations';
+import vis from './visualizations/visualizations';
 
 /** @namespace */
 const gViz = {
   shared,
-  visualizations,
+  vis,
   NAME: 'gViz',
   VERSION: version,
 };

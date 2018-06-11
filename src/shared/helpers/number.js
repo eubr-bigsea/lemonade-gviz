@@ -1,5 +1,28 @@
 import * as d3 from 'd3';
 
+// Default user locale
+const userLocale = 'en-US';
+
+// Get user locale function
+const getUserLocale = function () {
+  // Get user locale
+  this.userLocale = window.navigator.userLanguage || window.navigator.language;
+
+  // Validate locale
+  const number = 0;
+  try {
+    return number.toLocaleString(userLocale);
+  }
+  catch (e) {
+    return this.userLocale = 'en-US';
+  }
+}
+
+// Helper to locale string
+const locale = function (d) {
+  return d.toLocaleString(userLocale);
+};
+
 // Default number format
 const numberFormat = d => {
   const value = +d || 0;
@@ -52,6 +75,9 @@ const format = {
 
 // Helpers numbers
 const number = {
+  userLocale,
+  getUserLocale,
+  locale,
   format,
   numberFormat,
   parseFormat,

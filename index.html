@@ -5,19 +5,10 @@
     <link rel='stylesheet' type='text/css' href='./dist/main.css'>
 
     <style>
-      html, body {
-        height: 100%;
-        width: 100%;
-      }
-
       ._container {
-        margin-left: 25px;
-        margin-right: 25px;
-        position: relative;
+        margin-top: 30px;
+        height: 500px;
         border: solid 1px black;
-        top: 50%;
-        height: 60%;
-        transform: translate(0, -50%);
       }
     </style>
   </head>
@@ -27,10 +18,11 @@
       <div class='gViz-wrapper-inner'></div>
     </div>
 
+    <script src='./dist/data/donut.js'></script>
     <script src='./dist/gviz-src.js'></script>
     <script>
       console.log(gViz);
-      gViz.shared.helpers.loading.show();
+      callDonut(gViz);
     </script>
   </body>
 </html>
