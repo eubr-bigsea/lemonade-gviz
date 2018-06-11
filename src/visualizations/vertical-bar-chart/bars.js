@@ -1,3 +1,7 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
 gViz.vis.verticalBarChart.bars = function () {
   "use strict";
@@ -33,7 +37,7 @@ gViz.vis.verticalBarChart.bars = function () {
           var nodeSel = d3.select(nodeObj);
 
           // Clean wrap gradients
-          gViz.shared.visualComponents.gradient()
+          shared.visualComponents.gradient()
             .action('clean')
             .run();
 
@@ -42,7 +46,7 @@ gViz.vis.verticalBarChart.bars = function () {
           wrapperBars.exit().remove();
           wrapperBars = wrapperBars.enter().append('rect').attr("class", "wrapper-bar").merge(wrapperBars);
           wrapperBars
-            .style('fill', function(d) { return "url(#gradient-" + gViz.shared.helpers.text.removeSpecial(d.x + d.y) + ")"; })
+            .style('fill', function(d) { return "url(#gradient-" + shared.helpers.text.removeSpecial(d.x + d.y) + ")"; })
             .attr("x", 0)
             .attr('width', _var.x.bandwidth())
             .attr('y', function(d) { return _var.getY(d); })
@@ -50,7 +54,7 @@ gViz.vis.verticalBarChart.bars = function () {
             .each(function(g) {
 
               // Set wrapper gradient
-              gViz.shared.visualComponents.gradient()
+              shared.visualComponents.gradient()
                 ._var(_var)
                 .id("gradient-"+g.x+g.y)
                 .colors([
@@ -84,7 +88,7 @@ gViz.vis.verticalBarChart.bars = function () {
           bars.exit().remove();
           bars = bars.enter().append('rect').attr("class", "bar").merge(bars);
           bars
-            .style('fill', function(d) { return "url(#gradient-" + gViz.shared.helpers.text.removeSpecial(d.x+d.y) + ")"; })
+            .style('fill', function(d) { return "url(#gradient-" + shared.helpers.text.removeSpecial(d.x+d.y) + ")"; })
             .attr("x", function(d) { return _var.xIn(d.x) + _var.xIn.bandwidth()/2 - _var.barWidth/2; })
             .attr('width', _var.barWidth)
             .attr('y', function(d) { return _var.getY(d); })
@@ -96,7 +100,7 @@ gViz.vis.verticalBarChart.bars = function () {
               var gradientColor = +g.y >= 0 ? _var.getColor(g, 'gradient') : _var.getColor(g, 'fill');
 
               // Set bars gradient
-              gViz.shared.visualComponents.gradient()
+              shared.visualComponents.gradient()
                 ._var(_var)
                 .id("gradient-"+g.x+g.y)
                 .colors([
@@ -165,3 +169,5 @@ gViz.vis.verticalBarChart.bars = function () {
 
   return main;
 };
+
+export default bars;

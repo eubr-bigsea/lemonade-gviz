@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.scatterPlot.create = function () {
+const create = function () {
   "use strict";
 
   // Get attributes values
@@ -49,7 +53,7 @@ gViz.vis.scatterPlot.create = function () {
           _var.gE.attr("transform", `translate(${_var.margin.left},${_var.margin.top})`);
 
           // Draw shadow
-          gViz.shared.visualComponents.shadow()
+          shared.visualComponents.shadow()
             ._var(_var)
             .wrap(_var.wrap)
             .id(_var.shadowId)
@@ -85,3 +89,5 @@ gViz.vis.scatterPlot.create = function () {
 
   return main;
 };
+
+export default create;

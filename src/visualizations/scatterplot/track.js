@@ -1,5 +1,10 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+import events from './events';
+
 // Initialize the visualization class
-gViz.vis.scatterPlot.track = function () {
+const track = function () {
   "use strict";
 
   // Get attributes values
@@ -62,10 +67,9 @@ gViz.vis.scatterPlot.track = function () {
             obj._values = { x: +e.x, y: +e.y, z: +e.z };
 
             // Mouseover event
-            components.events()
+            events()
               ._var(_var)
               .action("mouseover")
-              .components(components)
               .node(obj)
               .run();
 
@@ -78,10 +82,9 @@ gViz.vis.scatterPlot.track = function () {
             d3.select(this).style('fill', 'transparent');
 
             // Mouseover event
-            components.events()
+            events()
               ._var(_var)
               .action("mouseout")
-              .components(components)
               .node(_var.clicked)
               .run();
 
@@ -145,3 +148,5 @@ gViz.vis.scatterPlot.track = function () {
 
   return main;
 };
+
+export default track;

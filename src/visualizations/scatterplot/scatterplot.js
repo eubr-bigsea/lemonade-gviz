@@ -1,5 +1,18 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
+import initialize from './initialize';
+import xScale from './x-scale';
+import zScale from './z-scale';
+import yScale from './y-scale';
+import create from './create';
+import axis from './axis';
+import elements from './elements';
+import misc from './misc';
+
 // Initialize the visualization class
-gViz.vis.scatterPlot = function () {
+const scatterPlot = function () {
   "use strict";
 
   // Get attributes values
@@ -8,7 +21,7 @@ gViz.vis.scatterPlot = function () {
   var action = 'build';
   var animation = 900;
   var container = null;
-  var colors = { main: gViz.shared.helpers.colors.main };
+  var colors = { main: shared.helpers.colors.main };
   var data = [];
   var height = null;
   var margin = { top: 10, right: 10, bottom: 35, left: 0 };
@@ -56,7 +69,7 @@ gViz.vis.scatterPlot = function () {
 
           // Initializing
           if (!_var) { _var = {};  }
-          _var = gViz.vis.scatterPlot.initialize()
+          _var =  initialize()
             ._var(_var)
             ._id((_var._id != null) ? _var._id : _id)
             .animation(animation)
@@ -73,7 +86,7 @@ gViz.vis.scatterPlot = function () {
         case 'create':
 
           // Creating wrappers
-          _var = gViz.vis.scatterPlot.create()
+          _var =  create()
             ._var(_var)
             .run();
           break;
@@ -82,7 +95,7 @@ gViz.vis.scatterPlot = function () {
         case 'xScale':
 
           // Creating
-          _var = gViz.vis.scatterPlot.xScale()
+          _var =  xScale()
             ._var(_var)
             .data(_var.data.data)
             .run();
@@ -92,7 +105,7 @@ gViz.vis.scatterPlot = function () {
         case 'yScale':
 
           // Creating
-          _var = gViz.vis.scatterPlot.yScale()
+          _var =  yScale()
             ._var(_var)
             .data(_var.data.data)
             .run();
@@ -102,7 +115,7 @@ gViz.vis.scatterPlot = function () {
         case 'zScale':
 
           // Creating
-          _var = gViz.vis.scatterPlot.zScale()
+          _var =  zScale()
             ._var(_var)
             .data(_var.data.data)
             .run();
@@ -112,7 +125,7 @@ gViz.vis.scatterPlot = function () {
         case 'axis':
 
           // Running
-          _var = gViz.vis.scatterPlot.axis()
+          _var =  axis()
             ._var(_var)
             .action('create')
             .run();
@@ -122,9 +135,8 @@ gViz.vis.scatterPlot = function () {
         case 'elements':
 
           // Running
-          _var = gViz.vis.scatterPlot.elements()
+          _var =  elements()
             ._var(_var)
-            .components(gViz.vis.scatterPlot)
             .run();
           break;
 
@@ -132,9 +144,8 @@ gViz.vis.scatterPlot = function () {
         case 'misc':
 
           // Running
-          _var = gViz.vis.scatterPlot.misc()
+          _var =  misc()
             ._var(_var)
-            .components(gViz.vis.scatterPlot)
             .run();
           break;
 
@@ -169,5 +180,6 @@ gViz.vis.scatterPlot = function () {
   main.run = function (_) { return main(_); };
 
   return main;
-
 }
+
+export default scatterPlot;

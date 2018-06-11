@@ -1,10 +1,14 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+import events from './events';
+
 // Initialize the visualization class
-gViz.vis.scatterPlot.elements = function () {
+const elements = function () {
   "use strict";
 
   // Get attributes values
   var _var       = null;
-  var components = null;
   var data       = null;
 
   // Validate attributes
@@ -97,10 +101,9 @@ gViz.vis.scatterPlot.elements = function () {
               _var.hovered = e;
 
               // Mouseover event
-              components.events()
+              events()
                 ._var(_var)
                 .action("mouseover")
-                .components(components)
                 .node(e)
                 .run();
 
@@ -110,10 +113,9 @@ gViz.vis.scatterPlot.elements = function () {
               _var.hovered = null;
 
               // Mouseout event
-              components.events()
+              events()
                 ._var(_var)
                 .action("mouseout")
-                .components(components)
                 .run();
 
             }).on('click', function(e) {
@@ -125,10 +127,9 @@ gViz.vis.scatterPlot.elements = function () {
               } else if(e.id === _var.clicked.id) { _var.clicked = null; }
 
               // Mouseover event
-              components.events()
+              events()
                 ._var(_var)
                 .action("click")
-                .components(components)
                 .node(e)
                 .run();
 
@@ -147,10 +148,9 @@ gViz.vis.scatterPlot.elements = function () {
             _var.clicked = null;
 
             // Mouseout event
-            components.events()
+            events()
               ._var(_var)
               .action("mouseout")
-              .components(components)
               .run();
 
           });
@@ -163,7 +163,7 @@ gViz.vis.scatterPlot.elements = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','components','data'].forEach(function (key) {
+  ['_var','data'].forEach(function (key) {
 
     // Attach variables to validation function
     validate[key] = function (_) {
@@ -185,3 +185,5 @@ gViz.vis.scatterPlot.elements = function () {
 
   return main;
 };
+
+export default elements;

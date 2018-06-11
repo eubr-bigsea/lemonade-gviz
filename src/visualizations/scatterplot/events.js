@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.scatterPlot.events = function () {
+const events = function () {
   "use strict";
 
   // Get attributes values
@@ -69,8 +73,7 @@ gViz.vis.scatterPlot.events = function () {
               tooltipObj.z = _var.zFormat(+node.z);
 
               // Set tooltip component
-              gViz.shared.visualComponents.tooltip()
-                ._var(_var)
+              shared.visualComponents.tooltip()
                 .body(_var.data.tooltip != null && _var.data.tooltip.body != null ? _var.data.tooltip.body : "")
                 .borderColor(node.color)
                 .hasImg(_var.data.tooltip != null && _var.data.tooltip.hasImg === true)
@@ -82,17 +85,17 @@ gViz.vis.scatterPlot.events = function () {
                 .run();
 
               // Set axis guide
-              gViz.shared.visualComponents.axisGuide()
-                ._var(_var)
-                .color(node.color)
-                .height(_var.height)
-                .left(left)
-                .top(top)
-                .value({ x: _var.xFormat(node.x), y: _var.yFormat(+node.y)})
-                .x(x)
-                .y(y)
-                .z(z)
-                .run();
+              //shared.visualComponents.axisGuide()
+              //  ._var(_var)
+              //  .color(node.color)
+              //  .height(_var.height)
+              //  .left(left)
+              //  .top(top)
+              //  .value({ x: _var.xFormat(node.x), y: _var.yFormat(+node.y)})
+              //  .x(x)
+              //  .y(y)
+              //  .z(z)
+              //  .run();
 
               break;
 
@@ -113,16 +116,15 @@ gViz.vis.scatterPlot.events = function () {
               groups.sort(function(a,b) { return d3.descending(+a.z, +b.z); })
 
               // Set bars component
-              gViz.shared.visualComponents.tooltip()
-                ._var(_var)
+              shared.visualComponents.tooltip()
                 .action("hide")
                 .run();
 
               // Set bars component
-              gViz.shared.visualComponents.axisGuide()
-                ._var(_var)
-                .action("hide")
-                .run();
+              //shared.visualComponents.axisGuide()
+              //  ._var(_var)
+              //  .action("hide")
+              //  .run();
 
               break;
 
@@ -176,3 +178,5 @@ gViz.vis.scatterPlot.events = function () {
 
   return main;
 };
+
+export default events;

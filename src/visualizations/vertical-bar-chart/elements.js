@@ -1,3 +1,7 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
 gViz.vis.verticalBarChart.elements = function () {
   "use strict";
@@ -119,3 +123,5 @@ gViz.vis.verticalBarChart.elements = function () {
 
   return main;
 };
+
+export default elements;

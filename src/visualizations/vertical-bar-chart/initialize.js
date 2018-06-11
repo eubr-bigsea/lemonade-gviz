@@ -1,3 +1,7 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
 gViz.vis.verticalBarChart.initialize = function () {
   "use strict";
@@ -7,7 +11,7 @@ gViz.vis.verticalBarChart.initialize = function () {
   var _var = null;
   var animation = 900;
   var container = null;
-  var colors = { main: gViz.shared.helpers.colors.main, aux: gViz.shared.helpers.colors.aux };
+  var colors = { main: shared.helpers.colors.main, aux: shared.helpers.colors.aux };
   var data = [];
   var height = null;
   var hover = null;
@@ -112,3 +116,5 @@ gViz.vis.verticalBarChart.initialize = function () {
 
   return main;
 };
+
+export default initialize;

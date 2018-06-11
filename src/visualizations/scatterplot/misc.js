@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.scatterPlot.misc = function () {
+const misc = function () {
   "use strict";
 
   // Get attributes values
@@ -98,7 +102,7 @@ gViz.vis.scatterPlot.misc = function () {
 
               // Add rect for obj
               legendStr += "<span class='rect' style='background-color:"+fillColor+" ; border-top: 2px solid "+strokeColor+";'></span><span class='name'>";
-              legendStr += gViz.shared.helpers.text.replaceVariables(legend, d);
+              legendStr += shared.helpers.text.replaceVariables(legend, d);
               legendStr += "</span>";
 
               // If the legend str wasnt computed, add to legend
@@ -144,3 +148,5 @@ gViz.vis.scatterPlot.misc = function () {
 
   return main;
 };
+
+export default misc;

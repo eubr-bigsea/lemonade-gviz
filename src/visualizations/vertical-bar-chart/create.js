@@ -1,3 +1,7 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
 gViz.vis.verticalBarChart.create = function () {
   "use strict";
@@ -50,7 +54,7 @@ gViz.vis.verticalBarChart.create = function () {
           _var.defs = _var.defs.enter().insert('defs',':first-child').attr("class", "svg-defs").merge(_var.defs);
 
           // Draw shadow
-          gViz.shared.visualComponents.shadow()
+          shared.visualComponents.shadow()
             ._var(_var)
             .wrap(_var.wrap)
             .id(_var.shadowId)
@@ -86,3 +90,5 @@ gViz.vis.verticalBarChart.create = function () {
 
   return main;
 };
+
+export default create;

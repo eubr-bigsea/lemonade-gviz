@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.scatterPlot.zScale = function () {
+const zScale = function () {
   "use strict";
 
   // Get attributes values
@@ -54,7 +58,7 @@ gViz.vis.scatterPlot.zScale = function () {
           _var.z.domain(_var.zBounds);
 
           // Set format
-          _var.zFormat = gViz.shared.helpers.number.parseFormat(_var.data == null ? null : _var.data.z);
+          _var.zFormat = shared.helpers.number.parseFormat(_var.data == null ? null : _var.data.z);
 
           break;
       }
@@ -92,3 +96,5 @@ gViz.vis.scatterPlot.zScale = function () {
 
   return main;
 };
+
+export default zScale;

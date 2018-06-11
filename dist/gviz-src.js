@@ -4,7 +4,7 @@
   (global.gViz = factory());
 }(this, (function () { 'use strict';
 
-  var version = "0.0.0+master.d6e7f54";
+  var version = "0.0.0+master.66b3a5c";
 
   var version$1 = "5.4.0";
 
@@ -32446,10 +32446,1358 @@
     return main;
   };
 
+  // Initialize the visualization class
+  const initialize$3 = function () {
+
+    // Get attributes values
+    var _id       = null;
+    var _var      = null;
+    var animation = 900;
+    var container = null;
+    var colors = { main: shared.helpers.colors.main, aux: shared.helpers.colors.aux };
+    var data      = [];
+    var height    = null;
+    var margin    = { top: 10, right: 10, bottom: 10, left: 10 };
+    var width     = null;
+
+    // Validate attributes
+    var validate = function(step$$1) {
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function(step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Initialize variables
+            if (!_var) { _var = {}; }
+            _var._id = _id;
+            _var.animation = animation;
+            _var.colors = colors;
+            _var.margin = margin;
+
+            // Id for shadows
+            _var.shadowId = `vis-shadow-${Math.floor(Math.random() * ((1000000000 - 5) + 1)) + 5}`;
+
+             // Get container
+            _var.container = {
+              selector: container,
+              d3: select(container),
+              el: ((typeof container === 'string' || container instanceof String) ? container : select(container).node()),
+              clientRect: select(container).node().getBoundingClientRect()
+            };
+
+            // Map data and get labels
+            _var.data = _var._data = data;
+
+            // Initialize tFormat
+            var tFmt = _var.data != null && _var.data.t != null && _var.data.t.type === 'number' ? 'number' : 'date';
+            _var.tFormat = shared.helpers[tFmt].parseFormat(_var.data == null ? null : _var.data.z);
+
+            // Define height and width
+            _var.height = ((height != null) ? height : _var.container.clientRect.height) - (_var.margin.top + _var.margin.bottom);
+            _var.width = ((width != null) ? width : _var.container.clientRect.width) - (_var.margin.left + _var.margin.right);
+
+            // Update height based on title
+            if(_var.data.title != null && _var.data.title !== "") { _var.height -= 35; }
+            if(_var.data.legend != null && _var.data.legend.isVisible != null && _var.data.legend.isVisible === true) { _var.height -= 30; }
+
+            // Set attribute _id to container and update container
+            _var.container.d3.attr('data-vis-id', _var._id);
+
+            // NO DATA AVAILABLE
+            if (_var.data.data.length === 0) {
+              _var.container.d3.html("<h5 style='line-height: "+(_var.container.clientRect.height)+"px; text-align: center;'>NO DATA AVAILABLE</h5>");
+            } else {
+              _var.container.d3.selectAll("h5").remove();
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Expose global variables
+    ['_id','_var','animation','container','colors','data','height','margin','width'].forEach(function(key) {
+
+      // Attach variables to validation function
+      validate[key] = function(_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function(_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Execute the specific called function
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const xScale$1 = function () {
+
+    // Get attributes values
+    var _var = undefined;
+    var data = [];
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Set format
+            _var.xIsDate = (_var.data.x != null && _var.data.x.type === 'time' && _var.data.x.inFormat != null && _var.data.x.outFormat != null);
+            _var.xIsNumber = (_var.data.x != null && _var.data.x.type === 'number' && _var.data.x.format != null);
+            var xFmt = _var.xIsDate ? 'date' : (_var.xIsNumber ? 'number' : 'text');
+            _var.xFormat = shared.helpers[xFmt].parseFormat(_var.data == null ? null : _var.data.x);
+
+            // Define scales
+            _var.x = _var.xIsDate || _var.xIsNumber ? linear$2().range([0, _var.width]) : band().range([0, _var.width]).padding(0.1);
+
+            // Define aux variables
+            var min$$1 = null, max$$1 = null, diff = null;
+
+            // Initialize domains
+            _var.xDomain = {};
+            var xDomain = [];
+
+            // Get domains
+            data.forEach(function(d) {
+              d.values.forEach(function(v) {
+
+                // Set parent
+                v._parent = d;
+
+                // Date value
+                if(_var.xIsDate) {
+
+                  // Parse values
+                  v.parsedX = timeParse(_var.data.x.inFormat)(v.x).getTime();
+                  v.formattedX = _var.xFormat(v.x);
+
+                  // Set domain
+                  if(min$$1 == null || min$$1 > +v.parsedX) { min$$1 = +v.parsedX; }
+                  if(max$$1 == null || max$$1 < +v.parsedX) { max$$1 = +v.parsedX; }
+
+                // Number values
+                } else if(_var.xIsNumber) {
+
+                  // Parse values
+                  v.parsedX = +v.x;
+                  v.formattedX = _var.xFormat(v.x);
+
+                  // Set domain
+                  if(min$$1 == null || min$$1 > +v.x) { min$$1 = +v.x; }
+                  if(max$$1 == null || max$$1 < +v.x) { max$$1 = +v.x; }
+
+                // For ordinal scales
+                } else {
+
+                  // Get ordinal values
+                  v.parsedX = v.x;
+                  v.formattedX = v.x;
+
+                  // Add id to x domain value
+                  if(_var.xDomain[v.x] == null) {
+                    _var.xDomain[v.x] = v;
+                    xDomain.push(v.x);
+                  }
+                }
+
+              });
+            });
+
+            // Date or number values
+            if(_var.xIsDate || _var.xIsNumber) {
+
+              // Sort values
+              data.forEach(function(d) { d.values = d.values.sort(function(a,b) { return ascending(a.parsedX, b.parsedX); }); });
+
+              // Check for default values
+              if(isNaN(min$$1)) { min$$1 = 0; }
+              if(isNaN(max$$1)) { max$$1 = 1; }
+
+              // Get diff
+              var diff = Math.abs(max$$1 - min$$1) === 0 ? Math.abs(max$$1 * 0.1) : 0;
+
+              // Add dot fix offset
+              var dotFix = 20 * Math.abs((max$$1 + diff) - (min$$1 == 0 ? min$$1 : min$$1 - diff)) / _var.width;
+              min$$1 = min$$1 - dotFix;
+              max$$1 = max$$1 + dotFix;
+
+              // Set x domain
+              _var.x.domain([(min$$1 == 0 ? min$$1 : min$$1 - diff), max$$1 + diff]).nice();
+
+              // Get x axis ticks
+              var bins = max([3, parseInt(_var.width / 100, 10)]);
+
+              // Define axis
+              _var.xAxis = axisBottom(_var.x).ticks(bins).tickPadding(10).tickFormat(_var.xIsDate ? timeFormat(_var.data.x.outFormat) : _var.xFormat);
+
+            } else {
+
+              // Set x domain
+              _var.x.domain(xDomain);
+
+              // Define axis
+              _var.xAxis = axisBottom(_var.x).tickPadding(10).tickFormat(function(d) { return d; });
+
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','data'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = function (_) {
+      return main('run');
+    };
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const zScale = function () {
+
+    // Get attributes values
+    var _var = undefined;
+    var data = [];
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Define z scale
+            _var.z = linear$2().range([5, 20]);
+
+            // Define aux variables
+            var min$$1 = null,
+                max$$1 = null;
+
+            // Get bounds
+            data.forEach(function(d) {
+              d.values.forEach(function(v) {
+                if(min$$1 == null || min$$1 > +v.z) { min$$1 = +v.z; }
+                if(max$$1 == null || max$$1 < +v.z) { max$$1 = +v.z; }
+              });
+            });
+
+            // Check for default values
+            if(isNaN(min$$1)) { min$$1 = 0; }
+            if(isNaN(max$$1)) { max$$1 = 1; }
+
+            // Set z domain
+            _var.zBounds = [min$$1, max$$1]; //(min == 0 ? min : min - diff), max + diff];
+            _var.z.domain(_var.zBounds);
+
+            // Set format
+            _var.zFormat = shared.helpers.number.parseFormat(_var.data == null ? null : _var.data.z);
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','data'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = function (_) {
+      return main('run');
+    };
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const yScale$1 = function () {
+
+    // Get attributes values
+    var _var = undefined;
+    var data = [];
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Initialize scale
+            _var.y = linear$2().range([_var.height, 0]);
+
+            // Define aux variables
+            var min$$1 = null,
+                max$$1 = null,
+                diff = null;
+
+            // Get bounds
+            data.forEach(function(d) {
+              d.values.forEach(function(v) {
+                if(min$$1 == null || min$$1 > +v.y) { min$$1 = +v.y; }
+                if(max$$1 == null || max$$1 < +v.y) { max$$1 = +v.y; }
+              });
+            });
+
+            // Get axis target
+            if(_var.data.y != null && _var.data.y.target != null && !isNaN(+_var.data.y.target)) {
+              _var.yTarget = +_var.data.y.target;
+              if(min$$1 == null || min$$1 > +_var.data.y.target) { min$$1 = +_var.data.y.target; }
+              if(max$$1 == null || max$$1 < +_var.data.y.target) { max$$1 = +_var.data.y.target; }
+            }
+
+            // Check for default values
+            if(isNaN(min$$1)) { min$$1 = 0; }
+            if(isNaN(max$$1)) { max$$1 = 1; }
+
+            // Get diff
+            var diff = Math.abs(max$$1 - min$$1) === 0 ? Math.abs(max$$1 * 0.1) : 0;
+
+            // Add dot fix offset
+            var dotFix = 20 * Math.abs((max$$1 + diff) - (min$$1 == 0 ? min$$1 : min$$1 - diff)) / _var.height;
+            min$$1 = min$$1 - dotFix;
+            max$$1 = max$$1 + dotFix;
+
+            // Set x domain
+            _var.yBounds = [(min$$1 == 0 ? min$$1 : min$$1 - diff), max$$1 + diff];
+            _var.y.domain(_var.yBounds).nice();
+
+            // Set format
+            _var.yFormat = shared.helpers.number.parseFormat(_var.data == null ? null : _var.data.y);
+
+            // Get x axis ticks
+            var bins = max([3, parseInt(_var.height / 25, 10)]);
+
+            // Define y axis
+            _var.yAxis = axisLeft(_var.y).ticks(bins).tickPadding(10).tickFormat(_var.yFormat);
+
+            // Update margin left and width
+            if(data.length > 0) {
+              _var.width += _var.margin.left;
+              _var.margin.left = 5 + max(_var.yAxis.scale().ticks().map(function(d) { return shared.helpers.text.getSize(_var.yFormat(d)); }));
+              _var.width -= _var.margin.left;
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','data'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = function (_) {
+      return main('run');
+    };
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const create$5 = function () {
+
+    // Get attributes values
+    var _var = undefined;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Draw svg
+            _var.wrap = _var.container.d3.selectAll(`svg.chart-${_var._id}`).data(["chart-svg"]);
+            _var.wrap.exit().remove();
+            _var.wrap = _var.wrap.enter().append("svg").attr('class', `scatter-plot chart-${_var._id}`).merge(_var.wrap); // svg
+
+            // Update outer dimensions
+            _var.wrap
+              .attr("width", _var.width + _var.margin.left + _var.margin.right)
+              .attr("height", _var.height + _var.margin.top + _var.margin.bottom);
+
+            // Draw g
+            _var.g = _var.wrap.selectAll("g.chart-wrap").data(["chart-wrap"]); // svg:g
+            _var.g.exit().remove();
+            _var.g = _var.g.enter().append('g').attr('class', "chart-wrap").merge(_var.g);
+            _var.g.attr("transform", `translate(${_var.margin.left},${_var.margin.top})`);
+
+            // Draw gE for elements
+            _var.gE = _var.wrap.selectAll("g.chart-wrap-elements").data(["chart-wrap-elements"]); // svg:g
+            _var.gE.exit().remove();
+            _var.gE = _var.gE.enter().append('g').attr('class', "chart-wrap-elements").merge(_var.gE);
+            _var.gE.attr("transform", `translate(${_var.margin.left},${_var.margin.top})`);
+
+            // Draw shadow
+            shared.visualComponents.shadow()
+              ._var(_var)
+              .wrap(_var.wrap)
+              .id(_var.shadowId)
+              .run();
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var', 'animation'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const axis$2 = function () {
+
+    // Get attributes values
+    var _var = undefined;
+    var action = 'create';
+
+    // Validate attributes
+    var validate = function validate(step$$1) {
+
+      switch (step$$1) {
+        case 'run':
+          return true;
+        default:
+          return false;
+      }
+    };
+
+    // Main function
+    var main = function main(step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            switch (action) {
+
+              case 'create':
+
+                // Create and update X axis
+                _var.x_axis = _var.g.selectAll(".x.axis").data(['x']);
+                _var.x_axis.exit().remove();
+                _var.x_axis = _var.x_axis.enter().append('g').attr("class", "x axis").merge(_var.x_axis);
+                _var.x_axis.call(_var.xAxis.tickSize(-_var.height)).attr("transform", 'translate(0,' + _var.height + ')');
+                _var.x_axis.selectAll(".tick line").attr('y1', 3);
+                _var.x_axis.selectAll(".tick text")
+                  .attr('x', function(d, i) {
+                    if(i === _var.x_axis.selectAll(".tick text").size()-1) { return -(this.getBBox().width/2) + _var.margin.right; }
+                    else { return 0; }
+                  });
+
+                // Remove overlapping tick text
+                _var.x_axis.selectAll(".tick text").filter(function(d) { return d === _var.xTarget; }).remove();
+
+                // Create and update Y axis
+                _var.y_axis = _var.g.selectAll(".y.axis").data(['y']);
+                _var.y_axis.exit().remove();
+                _var.y_axis = _var.y_axis.enter().append('g').attr("class", "y axis").merge(_var.y_axis);
+                _var.y_axis.call(_var.yAxis.tickSize(-_var.width));
+                _var.y_axis.selectAll(".tick line").attr('x1', -3);
+
+                // Remove overlapping tick text
+                _var.y_axis.selectAll(".tick text").filter(function(d) { return d === _var.yTarget; }).remove();
+
+                // Set axis string
+                var yTitle = (_var.data.y != null && _var.data.y.title != null && _var.data.y.title !== "" ? "<b>Y - </b>"+_var.data.y.title : "");
+                var xTitle = (_var.data.x != null && _var.data.x.title != null && _var.data.x.title !== "" ? "<b>X - </b>"+_var.data.x.title : "");
+                var zTitle = (_var.data.z != null && _var.data.z.title != null && _var.data.z.title !== "" ? "<span class='circle' style='margin-left: 10px; background-color: #ccc;'></span>"+_var.data.z.title : "");
+
+                // Set axis title
+                if(yTitle !== "" && zTitle !== "" && xTitle !== "") { _var.axisTitle = yTitle+" / "+xTitle+" "+zTitle; }
+                else if(yTitle !== "" && zTitle !== "" && xTitle === "") { _var.axisTitle = yTitle+" "+zTitle; }
+                else if(yTitle !== "" && zTitle === "" && xTitle !== "") { _var.axisTitle = yTitle+" / "+xTitle; }
+                else if(yTitle === "" && zTitle !== "" && xTitle !== "") { _var.axisTitle = xTitle+" "+zTitle; }
+                else if(yTitle !== "" && zTitle === "" && xTitle === "") { _var.axisTitle = yTitle; }
+                else if(yTitle === "" && zTitle !== "" && xTitle === "") { _var.axisTitle = zTitle; }
+                else if(yTitle === "" && zTitle === "" && xTitle !== "") { _var.axisTitle = xTitle; }
+                else { _var.axisTitle = ""; }
+
+                break;
+
+            }
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var', 'action'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = function (_) {
+      return main('run');
+    };
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const events$3 = function () {
+
+    // Get attributes values
+    var _var       = null;
+    var action     = 'mouseover';
+    var node       = null;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Run code
+          case 'run':
+
+            // Set groups
+            var groups = _var.gE.selectAll(".chart-elements").selectAll(".element-group");
+            var circles = _var.gE.selectAll(".chart-elements").selectAll(".element-group").selectAll('circle');
+
+            switch (action) {
+
+              case 'mouseover':
+
+                // Fade other groups
+                groups.transition().style('opacity', function(g) {
+                  return g === node || (_var.clicked != null && (_var.clicked.id === g.id || _var.clicked.parentId === g.parentId)) ? 1 : 0.2;
+                });
+
+                // Add filter to hovered node
+                circles.transition()
+                  .style("filter", function(g) { return g === node ? "url(#"+_var.shadowId+")" : ""; })
+                  .style('fill', function(g) {
+                    return g === node || node.parentId === g.parentId || (_var.clicked != null && (_var.clicked.id === g.id || _var.clicked.parentId === g.parentId)) ? g.color : (g.fadeColor != null ? g.fadeColor : g.color);
+                  });
+
+                // Get x and y values
+                var x = _var.x(node.parsedX) + (_var.xIsDate || _var.xIsNumber ? 0 : _var.x.bandwidth()/2);
+                var y = _var.y(+node.y);
+                var z = _var.z(+node.z);
+
+                // Get left and top positions
+                var left = _var.wrap.node().getBoundingClientRect().left +_var.margin.left + x;
+                var top  = _var.wrap.node().getBoundingClientRect().top + _var.margin.top + y - z;
+
+                // Initialize tooltip object
+                var tooltipObj = {};
+
+                // Set node attributes to tooltip obj
+                Object.keys(node).forEach(function(k) { tooltipObj[k] = node[k]; });
+
+                // Set x, y and z values with format
+                tooltipObj.x = _var.xFormat(+node.x);
+                tooltipObj.y = _var.yFormat(+node.y);
+                tooltipObj.z = _var.zFormat(+node.z);
+
+                // Set tooltip component
+                shared.visualComponents.tooltip()
+                  .body(_var.data.tooltip != null && _var.data.tooltip.body != null ? _var.data.tooltip.body : "")
+                  .borderColor(node.color)
+                  .hasImg(_var.data.tooltip != null && _var.data.tooltip.hasImg === true)
+                  .left(left)
+                  .muted(_var.data.tooltip != null && _var.data.tooltip.muted != null && _var.data.tooltip.muted === true)
+                  .obj(tooltipObj)
+                  .top(top)
+                  .title(_var.data.tooltip != null && _var.data.tooltip.title != null ? _var.data.tooltip.title : "")
+                  .run();
+
+                // Set axis guide
+                //shared.visualComponents.axisGuide()
+                //  ._var(_var)
+                //  .color(node.color)
+                //  .height(_var.height)
+                //  .left(left)
+                //  .top(top)
+                //  .value({ x: _var.xFormat(node.x), y: _var.yFormat(+node.y)})
+                //  .x(x)
+                //  .y(y)
+                //  .z(z)
+                //  .run();
+
+                break;
+
+              case 'mouseout':
+
+                // Reset other groups opacity
+                groups.transition().style('opacity', function(d) {
+                  return _var.clicked == null || _var.clicked.id === d.id || _var.clicked.parentId === d.parentId ? 1 : 0.2;
+                });
+                // Remove filter
+                circles.transition()
+                  .style("filter", "")
+                  .style('fill', function(d) {
+                    return _var.clicked != null && (_var.clicked.id === d.id || _var.clicked.parentId === d.parentId) ? d.color : (d.fadeColor != null ? d.fadeColor : d.color);
+                  });
+
+                // Put smaller elements on the front
+                groups.sort(function(a,b) { return descending(+a.z, +b.z); });
+
+                // Set bars component
+                shared.visualComponents.tooltip()
+                  .action("hide")
+                  .run();
+
+                // Set bars component
+                //shared.visualComponents.axisGuide()
+                //  ._var(_var)
+                //  .action("hide")
+                //  .run();
+
+                break;
+
+              case 'click':
+
+                // Fade other groups
+                groups.transition().style('opacity', function(g) {
+                  return g === node || (_var.clicked != null && (_var.clicked.id === g.id || _var.clicked.parentId === g.parentId)) ? 1 : 0.2;
+                });
+
+                circles.transition().style('fill', function(g) {
+                  return g === node || (_var.clicked != null && (_var.clicked.id === g.id || _var.clicked.parentId === g.parentId)) ? g.color : (g.fadeColor != null ? g.fadeColor : g.color);
+                });
+
+                break;
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','action','components','node'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = function (_) {
+      return main('run');
+    };
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const elements$3 = function () {
+
+    // Get attributes values
+    var _var       = null;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Set data array
+            var data = (data == null ? _var.data.data : data);
+
+            // Set _data array based on circles
+            var _data = [];
+
+            // Iterate over data
+            data.forEach(function(d) {
+
+              // Iterate over data values
+              d.values.forEach(function(v) {
+
+                // Initialize obj
+                var obj = {};
+
+                // Fill obj with d values
+                Object.keys(d).forEach(function(k) { obj[k] = d[k]; });
+
+                // Set id and parent id
+                obj.parentId = d.id;
+                obj.id = d.id + v.t;
+
+                // Fill obj with v values
+                Object.keys(v).forEach(function(k) { obj[k] = v[k]; });
+
+                // Store obj
+                _data.push(obj);
+              });
+            });
+
+            // Sort data by z value
+            _data = _data.sort(function(a,b) { return descending(+a.z, +b.z); });
+
+            // Element canvas
+            var elements = _var.gE.selectAll(".chart-elements").data(["chart-elements"]);
+            elements.exit().remove();
+            elements = elements.enter().append("g").attr("class", "chart-elements").merge(elements);
+
+            // Create groups
+            var groups = elements.selectAll(".element-group").data(_data, function (d) { return d.id; });
+            groups.exit().remove();
+            groups = groups.enter().append("g").attr("class", "element-group").merge(groups);
+
+            // For each element in group
+            groups
+              .attr('id', function(d) { return d.id; })
+              .style('opacity', function(g) { return _var.clicked == null || g.id === _var.clicked.id ? 1 : 0.2; })
+              .transition().duration(200)
+                .attr("transform", function (d) { return `translate(${_var.x(d.parsedX) + (_var.xIsDate || _var.xIsNumber ? 0 : _var.x.bandwidth()/2)},${_var.y(+d.y)})`; })
+                .each(function (e, i) {
+
+                  // Draw Background rect
+                  var circle$$1 = select(this).selectAll("circle.node-circle").data([e]);
+                  circle$$1.exit().remove();
+                  circle$$1 = circle$$1.enter().append('circle').attr("class", "node-circle").merge(circle$$1);
+                  circle$$1
+                    .style('fill', function(d) { return d.fadeColor != null ? d.fadeColor : d.color; })
+                    .attr("x", 0)
+                    .attr('y', 0)
+                    .transition().duration(200)
+                      .attr('r', function(d) { return _var.z(+d.z); });
+
+                });
+
+              // Event bindings
+              groups.on('mouseover', function(e) {
+
+                // Set hovered node
+                _var.hovered = e;
+
+                // Mouseover event
+                events$3()
+                  ._var(_var)
+                  .action("mouseover")
+                  .node(e)
+                  .run();
+
+              }).on('mouseout', function(e) {
+
+                // Reset hovered node
+                _var.hovered = null;
+
+                // Mouseout event
+                events$3()
+                  ._var(_var)
+                  .action("mouseout")
+                  .run();
+
+              }).on('click', function(e) {
+
+                // Set clicked node
+                if(_var.clicked == null || _var.clicked.id !== e.id) { _var.clicked = e;
+
+                // Reset clicked node
+                } else if(e.id === _var.clicked.id) { _var.clicked = null; }
+
+                // Mouseover event
+                events$3()
+                  ._var(_var)
+                  .action("click")
+                  .node(e)
+                  .run();
+
+              });
+
+            // Draw Background rect
+            var bg_rect = _var.g.selectAll("rect.bg-rect").data(["bg-rect"]);
+            bg_rect.exit().remove();
+            bg_rect = bg_rect.enter().insert('rect', ':first-child').attr("class", "bg-rect").style('fill', 'transparent').merge(bg_rect);
+            bg_rect.style('fill', 'transparent').attr("x", 0).attr('y', 0).attr('width', _var.width).attr("height", _var.height);
+
+            // Remove click on other elements click
+            _var.g.on('click', function(d) {
+
+              // Empty clicked node
+              _var.clicked = null;
+
+              // Mouseout event
+              events$3()
+                ._var(_var)
+                .action("mouseout")
+                .run();
+
+            });
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','data'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const misc$3 = function () {
+
+    // Get attributes values
+    var _var      = undefined;
+
+    // Validate attributes
+    var validate = function(step$$1) {
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function(step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Update height based on title
+            var top = 0;
+            if(_var.data.title != null && _var.data.title !== "") { top += 35; }
+            if(_var.data.legend != null && _var.data.legend.isVisible != null && _var.data.legend.isVisible === true) { top += 30; }
+
+            // Update container
+            _var.container.d3.selectAll('.grid-background, .scatter-plot').style('top', top + 'px');
+
+            // Has title flag
+            var hasTitle = _var.data.title != null && _var.data.title !== "";
+
+            // Draw title wrapper
+            var titleWrapper = _var.container.d3.selectAll(".title-wrapper").data(hasTitle ? ["title-wrapper"] : []); // svg:g
+            titleWrapper.exit().remove();
+            titleWrapper = titleWrapper.enter().append('div').attr('class', "title-wrapper").merge(titleWrapper);
+            titleWrapper
+              .style('width', '100%')
+              .style('height', '30px')
+              .style('margin', '0px 0px 5px 0px')
+              .style('padding', '6px 10px 5px')
+              .style('oveflow', 'hidden')
+              .style('white-space', 'nowrap')
+              .style('text-overflow', 'ellipsis')
+              .style('background-color', '#eee')
+              .style('color', '#666')
+              .style('font-size', '12px')
+              .html(_var.data.title);
+
+            // Has legend flag
+            var hasLegend = _var.data.legend != null && _var.data.legend.isVisible != null && _var.data.legend.isVisible === true;
+            var legendWrapper, innerWrapper;
+
+            // Draw legend wrapper
+            legendWrapper = _var.container.d3.selectAll(".legend-wrapper").data(hasLegend ? ["legend-wrapper"] : []); // svg:g
+            legendWrapper.exit().remove();
+            legendWrapper = legendWrapper.enter().append('div').attr('class', "legend-wrapper").merge(legendWrapper);
+            legendWrapper
+              .style('width', '100%')
+              .style('height', '30px')
+              .style('oveflow-y', 'hidden')
+              .style('oveflow-x', 'auto')
+              .style('padding-left', _var.margin.left + "px")
+              .each(function(d) {
+
+                // Draw legend wrapper
+                innerWrapper = select(this).selectAll(".legend-inner").data(hasLegend ? ["legend-inner"] : []); // svg:g
+                innerWrapper.exit().remove();
+                innerWrapper = innerWrapper.enter().append('div').attr('class', "legend-inner").merge(innerWrapper);
+                innerWrapper
+                  .style('width', 'auto')
+                  .style('height', '100%')
+                  .style('white-space', 'nowrap');
+
+              });
+
+            if(innerWrapper != null) {
+
+              // Initialize string
+              var string = _var.axisTitle != null && _var.axisTitle !== "" ? "<span class='axis-title'>"+_var.axisTitle+"</span>" : "";
+              var stringObj = {};
+
+              // Iterate over nodes
+              _var.data.data.forEach(function(d, i) {
+
+                // Get color
+                var fillColor = d.color;
+                var strokeColor = d.color;
+                var legend = _var.data.legend != null && _var.data.legend.text != null ? _var.data.legend.text : "{{name}}";
+                var legendStr = "";
+
+                // Add rect for obj
+                legendStr += "<span class='rect' style='background-color:"+fillColor+" ; border-top: 2px solid "+strokeColor+";'></span><span class='name'>";
+                legendStr += shared.helpers.text.replaceVariables(legend, d);
+                legendStr += "</span>";
+
+                // If the legend str wasnt computed, add to legend
+                if(stringObj[legendStr] == null) {
+                  stringObj[legendStr] = true;
+                  string += legendStr;
+                }
+
+              });
+
+              // Update legend
+              innerWrapper.html(string);
+
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','animation','components'].forEach(function(key) {
+
+      // Attach variables to validation function
+      validate[key] = function(_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function(_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const scatterPlot = function () {
+
+    // Get attributes values
+    var _id = `vis-scatter-plot-${Math.floor(Math.random() * ((1000000000 - 5) + 1)) + 5}`;
+    var _var = null;
+    var animation = 900;
+    var container = null;
+    var colors = { main: shared.helpers.colors.main };
+    var data = [];
+    var height = null;
+    var margin = { top: 10, right: 10, bottom: 35, left: 0 };
+    var width = null;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+      switch (step$$1) {
+        case 'build':      return (container != null) && (selectAll(container).size() !== 0 || select(container).size() !== 0);
+        case 'initialize': return true;
+        case 'axis':       return data != null && data.data != null && data.data.length > 0;
+        case 'create':     return data != null && data.data != null && data.data.length > 0;
+        case 'elements':   return data != null && data.data != null && data.data.length > 0;
+        case 'misc':       return data != null && data.data != null;
+        case 'xScale':     return data != null && data.data != null && data.data.length > 0;
+        case 'yScale':     return data != null && data.data != null && data.data.length > 0;
+        case 'zScale':     return data != null && data.data != null && data.data.length > 0;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'build':
+
+            main('initialize');
+            main('yScale');
+            main('xScale');
+            main('zScale');
+            main('create');
+            main('axis');
+            main('elements');
+            main('misc');
+            break;
+
+          // Initialize visualization variable
+          case 'initialize':
+
+            // Initializing
+            if (!_var) { _var = {};  }
+            _var =  initialize$3()
+              ._var(_var)
+              ._id((_var._id != null) ? _var._id : _id)
+              .animation(animation)
+              .container(container)
+              .colors(colors)
+              .data(data)
+              .height(height)
+              .margin(margin)
+              .width(width)
+              .run();
+            break;
+
+          // Create initial elements
+          case 'create':
+
+            // Creating wrappers
+            _var =  create$5()
+              ._var(_var)
+              .run();
+            break;
+
+          // Setup X scale
+          case 'xScale':
+
+            // Creating
+            _var =  xScale$1()
+              ._var(_var)
+              .data(_var.data.data)
+              .run();
+            break;
+
+          // Setup Y scale
+          case 'yScale':
+
+            // Creating
+            _var =  yScale$1()
+              ._var(_var)
+              .data(_var.data.data)
+              .run();
+            break;
+
+          // Setup Z scale
+          case 'zScale':
+
+            // Creating
+            _var =  zScale()
+              ._var(_var)
+              .data(_var.data.data)
+              .run();
+            break;
+
+          // Setup axis elements
+          case 'axis':
+
+            // Running
+            _var =  axis$2()
+              ._var(_var)
+              .action('create')
+              .run();
+            break;
+
+          // Setup elements
+          case 'elements':
+
+            // Running
+            _var =  elements$3()
+              ._var(_var)
+              .run();
+            break;
+
+          // Show Misc
+          case 'misc':
+
+            // Running
+            _var =  misc$3()
+              ._var(_var)
+              .run();
+            break;
+
+        }
+      }
+
+      return _var;
+    };
+
+    // Expose global variables
+    ['_id', '_var', 'action', 'animation', 'container', 'colors', 'data', 'height', 'margin', 'width'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Secondary functions
+    main.build = function (_) { return main("build"); };
+
+    // Execute the specific called function
+    main.run = function (_) { return main(_); };
+
+    return main;
+  };
+
   const vis = {
     donutChart,
     lineChart,
     pieChart,
+    scatterPlot,
   };
 
   /** @namespace */

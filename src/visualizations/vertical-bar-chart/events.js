@@ -1,3 +1,7 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
 gViz.vis.verticalBarChart.events = function () {
   "use strict";
@@ -66,7 +70,7 @@ gViz.vis.verticalBarChart.events = function () {
               tooltipObj.y = _var.yFormat(node.y);
 
               // Set bars component
-              gViz.shared.visualComponents.tooltip()
+              shared.visualComponents.tooltip()
                 ._var(_var)
                 .body(_var.data.tooltip != null && _var.data.tooltip.body != null ? _var.data.tooltip.body : "")
                 .muted(_var.data.tooltip != null && _var.data.tooltip.muted != null && _var.data.tooltip.muted === true)
@@ -87,7 +91,7 @@ gViz.vis.verticalBarChart.events = function () {
               bars.transition().style('opacity', 1).style("filter", "")
 
               // Set bars component
-              gViz.shared.visualComponents.tooltip()
+              shared.visualComponents.tooltip()
                 ._var(_var)
                 .action("hide")
                 .run();
@@ -131,3 +135,5 @@ gViz.vis.verticalBarChart.events = function () {
 
   return main;
 };
+
+export default events;
