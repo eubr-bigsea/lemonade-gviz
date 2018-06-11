@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.pieChart.initialize = function () {
+const initialize = function () {
   "use strict";
 
   // Get attributes values
@@ -7,7 +11,7 @@ gViz.vis.pieChart.initialize = function () {
   let _var      = null;
   let animation = 900;
   let container = null;
-  var colors    = { main: gViz.shared.helpers.colors.main, aux: gViz.shared.helpers.colors.aux };
+  var colors    = { main: shared.helpers.colors.main, aux: shared.helpers.colors.aux };
   let data      = [];
   let height    = null;
   let margin    = { top: 10, right: 10, bottom: 10, left: 10 };
@@ -56,7 +60,7 @@ gViz.vis.pieChart.initialize = function () {
           _var.data = data;
 
           // Get formats
-          _var.format = gViz.shared.helpers.number.parseFormat(_var.data == null ? null : _var.data[_var.metric]);
+          _var.format = shared.helpers.number.parseFormat(_var.data == null ? null : _var.data[_var.metric]);
 
           // Get radius
           _var.muted = _var.data.attrs != null && _var.data.attrs.muted != null && _var.data.attrs.muted === true;
@@ -128,3 +132,5 @@ gViz.vis.pieChart.initialize = function () {
 
   return main;
 };
+
+export default initialize;

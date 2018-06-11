@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.pieChart.parse = function () {
+const parse = function () {
   "use strict";
 
   // Get attributes values
@@ -78,3 +82,5 @@ gViz.vis.pieChart.parse = function () {
 
   return main;
 };
+
+export default parse;

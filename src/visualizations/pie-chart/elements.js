@@ -1,5 +1,10 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+import events from './events';
+
 // Initialize the visualization class
-gViz.vis.pieChart.elements = function () {
+const elements = function () {
   "use strict";
 
   // Get attributes values
@@ -73,10 +78,9 @@ gViz.vis.pieChart.elements = function () {
             _var.hovered = e;
 
             // Mouseover event
-            components.events()
+            events()
               ._var(_var)
               .action("mouseover")
-              .components(components)
               .node(e)
               .run();
 
@@ -86,10 +90,9 @@ gViz.vis.pieChart.elements = function () {
             _var.hovered = null;
 
             // Mouseout event
-            components.events()
+            events()
               ._var(_var)
               .action("mouseout")
-              .components(components)
               .run();
 
           })
@@ -124,3 +127,5 @@ gViz.vis.pieChart.elements = function () {
 
   return main;
 };
+
+export default elements;

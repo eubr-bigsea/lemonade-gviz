@@ -2,8 +2,15 @@ import * as d3 from "d3";
 import $ from "jquery";
 import shared from "../../shared/shared";
 
+import initialize from './initialize';
+import create from './create';
+import elements from './elements';
+import misc from './misc';
+import parse from './parse';
+import events from './events';
+
 // Initialize the visualization class
-gViz.vis.pieChart = function () {
+const pieChart = function () {
   "use strict";
 
   // Auxiliar Functions
@@ -55,7 +62,7 @@ gViz.vis.pieChart = function () {
 
           // Initializing
           if (!_var) { _var = {};  }
-          _var = gViz.vis.pieChart.initialize()
+          _var =  initialize()
             ._var(_var)
             ._id((_var._id != null) ? _var._id : _id)
             .animation(animation)
@@ -73,7 +80,7 @@ gViz.vis.pieChart = function () {
         case 'parse':
 
           // Creating wrappers
-          _var = gViz.vis.pieChart.parse()
+          _var =  parse()
             ._var(_var)
             .run();
           break;
@@ -83,7 +90,7 @@ gViz.vis.pieChart = function () {
         case 'create':
 
           // Creating wrappers
-          _var = gViz.vis.pieChart.create()
+          _var =  create()
             ._var(_var)
             .run();
           break;
@@ -92,9 +99,8 @@ gViz.vis.pieChart = function () {
         case 'elements':
 
           // Creating wrappers
-          _var = gViz.vis.pieChart.elements()
+          _var =  elements()
             ._var(_var)
-            .components(gViz.vis.pieChart)
             .data(_var.data.data)
             .run();
           break;
@@ -103,9 +109,8 @@ gViz.vis.pieChart = function () {
         case 'misc':
 
           // Running
-          _var = gViz.vis.pieChart.misc()
+          _var =  misc()
             ._var(_var)
-            .components(gViz.vis.pieChart)
             .run();
           break;
 
@@ -140,6 +145,6 @@ gViz.vis.pieChart = function () {
   main.run = function (_) { return main(_); };
 
   return main;
+};
 
-}
-\nexport default pie-chart.js;
+export default pieChart;

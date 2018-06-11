@@ -4,7 +4,7 @@
   (global.gViz = factory());
 }(this, (function () { 'use strict';
 
-  var version = "0.0.0+master.10b6004";
+  var version = "0.0.0+master.d6e7f54";
 
   var version$1 = "5.4.0";
 
@@ -30270,6 +30270,853 @@
   const initialize$1 = function () {
 
     // Get attributes values
+    let _id       = null;
+    let _var      = null;
+    let animation = 900;
+    let container = null;
+    var colors    = { main: shared.helpers.colors.main, aux: shared.helpers.colors.aux };
+    let data      = [];
+    let height    = null;
+    let margin    = { top: 10, right: 10, bottom: 10, left: 10 };
+    let metric     = 'x';
+    let width     = null;
+
+    // Validate attributes
+    let validate = function(step$$1) {
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    let main = function(step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Initialize variables
+            if (!_var) { _var = {}; }
+            _var._id = _id;
+            _var.animation = animation;
+            _var.colors = colors;
+            _var.margin = margin;
+            _var.metric  = metric;
+
+            // Id for shadows
+            _var.shadowId = `vis-shadow-${Math.floor(Math.random() * ((1000000000 - 5) + 1)) + 5}`;
+
+             // Get container
+            _var.container = {
+              selector: container,
+              d3: select(container),
+              el: ((typeof container === 'string' || container instanceof String) ? container : select(container).node()),
+              clientRect: select(container).node().getBoundingClientRect()
+            };
+
+            // Map data and get labels
+            _var.data = data;
+
+            // Get formats
+            _var.format = shared.helpers.number.parseFormat(_var.data == null ? null : _var.data[_var.metric]);
+
+            // Get radius
+            _var.muted = _var.data.attrs != null && _var.data.attrs.muted != null && _var.data.attrs.muted === true;
+            _var.radius = _var.data.attrs == null || _var.data.attrs.radius == null || isNaN(+_var.data.attrs.radius) ? 30 : +_var.data.attrs.radius;
+
+            // Define height and width
+            _var.height = ((height != null) ? height : _var.container.clientRect.height) - (_var.margin.top + _var.margin.bottom);
+            _var.width  = ((width != null) ? width : _var.container.clientRect.width) - (_var.margin.left + _var.margin.right);
+
+            // Update height based on title
+            if(_var.data.title != null && _var.data.title !== "") { _var.height -= 35; }
+            if(_var.data.legend != null && _var.data.legend.isVisible != null && _var.data.legend.isVisible === true) { _var.height -= 30; }
+
+            // Set donut size
+            _var.size   = min([_var.width, _var.height]) / 2 - 20;
+
+            // Set attribute _id to container and update container
+            _var.container.d3.attr('data-vis-id', _var._id);
+
+            // NO DATA AVAILABLE
+            if (_var.data == null || _var.data.data == null || _var.data.data.length === 0) {
+              _var.container.d3.html("<h5 style='line-height: "+(_var.container.clientRect.height)+"px; text-align: center;'>NO DATA AVAILABLE</h5>");
+            } else { _var.container.d3.selectAll("h5").remove(); }
+
+            // Initialize pie layout
+            _var.pie = pie()
+              .sort(null)
+              .padAngle(.01)
+              .value(function(d) { return d[_var.metric]; });
+
+            // Initialize arc function
+            _var.arc = arc()
+              .outerRadius(_var.size)
+              .innerRadius(0);
+
+            // Initialize arc function
+            _var.labelArc = arc()
+              .outerRadius(_var.size + 20)
+              .innerRadius(_var.size);
+
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Expose global variables
+    ['_id','_var','animation','container','colors','data','height','margin','metric','width'].forEach(function(key) {
+
+      // Attach variables to validation function
+      validate[key] = function(_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function(_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Execute the specific called function
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const create$3 = function () {
+
+    // Get attributes values
+    var _var = undefined;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Draw svg
+            _var.wrap = _var.container.d3.selectAll(`svg.chart-${_var._id}`).data(["chart-svg"]);
+            _var.wrap.exit().remove();
+            _var.wrap = _var.wrap.enter().append("svg").attr('class', `pie-chart chart-${_var._id}`).merge(_var.wrap); // svg
+
+            // Update outer dimensions
+            _var.wrap
+              .attr("width", _var.width + _var.margin.left + _var.margin.right)
+              .attr("height", _var.height + _var.margin.top + _var.margin.bottom);
+
+            // Draw g
+            _var.g = _var.wrap.selectAll("g.chart-wrap").data(["chart-wrap"]); // svg:g
+            _var.g.exit().remove();
+            _var.g = _var.g.enter().append('g').attr('class', "chart-wrap").merge(_var.g);
+
+            // Update dimensions
+            _var.g.attr("transform", `translate(${_var.margin.left + _var.width/2},${_var.margin.top + _var.height/2})`);
+
+            // Draw background grid
+            shared.visualComponents.backgroundGrid()
+              .id(_var._id)
+              .height(_var.height + _var.margin.top + _var.margin.bottom)
+              .width(_var.width + _var.margin.left + _var.margin.right)
+              .left(0)
+              .top(0)
+              .wrap(_var.container.d3)
+              .run();
+
+            // Draw shadow
+            shared.visualComponents.shadow()
+              ._var(_var)
+              .id(_var.shadowId)
+              .filterUnits("objectBoundingBox")
+              .wrap(_var.wrap)
+              .run();
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var', 'animation'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const events$1 = function () {
+
+    // Get attributes values
+    var _var       = null;
+    var action     = 'mouseover';
+    var node       = null;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Run code
+          case 'run':
+
+            // Select groups
+            var groups = _var.g.selectAll(".chart-elements").selectAll(".element-group");
+            var arcs   = _var.g.selectAll(".chart-elements").selectAll(".element-group").selectAll(".node-arc");
+            var labels   = _var.g.selectAll(".chart-elements").selectAll(".element-group").selectAll(".node-text");
+
+            switch (action) {
+
+              case 'mouseover':
+
+                // Update arc size
+                var bigArc = arc()
+                  .outerRadius(_var.size + 5)
+                  .innerRadius(0);
+
+                // Fade arcs and add drop shadow
+                arcs.transition()
+                  .attr("d", function(g) { return g.data.id === node.data.id ? bigArc(g) : _var.arc(g); })
+                  .style('fill', function(g) { return g.data.id === node.data.id ? g.data.color : g.data._color; })
+                  .style('stroke', function(g) { return g.data.id === node.data.id ? g.data.color : "#FFF"; })
+                  .style('opacity', function(g) { return g.data.id === node.data.id  ? 1 : 0.3; })
+                  .style("filter", function(g) { return g.data.id === node.data.id ? "url(#"+_var.shadowId+")" : ""; });
+
+                // Update label arc size
+                var bigLabelArc = arc()
+                  .outerRadius(_var.size + 20)
+                  .innerRadius(_var.size + 10);
+
+                // Update label arc size
+                labels
+                  .html(function(d) {
+                    var y = (d.startAngle + d.endAngle)/2 < Math.PI/2 || (d.startAngle + d.endAngle)/2 > (Math.PI/2)*3 ? -12 : 0;
+                    var text$$1 = d.data.id === node.data.id ? "<tspan x='0' y='" + (y) + "' style='font-weight: bold;'>" + d.data.name + "</tspan>" : "";
+                    text$$1 += d.data.id === node.data.id ? "<tspan x='0' y='" + (y + 17) + "'>" + _var.format(d.data.x) + "</tspan>" : _var.format(d.data.x);
+                    return text$$1;
+                  })
+                  .transition()
+                    .style('opacity', function(g) { return g.data.id === node.data.id  ? 1 : 0.3; })
+                    .attr("transform", function(d) { return "translate(" + (d.data.id === node.data.id ? bigLabelArc.centroid(d) : _var.labelArc.centroid(d)) + ")"; });
+
+                // Initialize tooltip object
+                var tooltipObj = {};
+
+                // Set node attributes to tooltip obj
+                Object.keys(node.data).forEach(function(k) { tooltipObj[k] = node.data[k]; });
+
+                break;
+
+              case 'mouseout':
+
+                // Reset arcs
+                arcs.transition()
+                  .style('fill', function(g) { return g.data._color; })
+                  .style('stroke', function(g) { return g.data._color; })
+                  .style('opacity', 1)
+                  .style('filter', '')
+                  .attr("d", _var.arc);
+
+                // Reset labels
+                labels
+                  .html(function(d) { return _var.format(d.data.x); })
+                  .transition()
+                    .style('opacity', 1)
+                    .attr("transform", function(d) { return "translate(" + _var.labelArc.centroid(d) + ")"; });
+
+                // Set node
+                node = _var.data[_var.metric];
+
+                break;
+
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','action','components','node','nodeSel'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) {
+          eval('return ' + key);
+        }
+        eval(key + ' = _');
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = function (_) {
+      return main('run');
+    };
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const elements$1 = function () {
+
+    // Get attributes values
+    var _var       = null;
+    var data       = null;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Set data array
+            var _data = _var.pie(data == null ? _var.data.data : data);
+
+            // Element canvas
+            var elements = _var.g.selectAll(".chart-elements").data(["chart-elements"]);
+            elements.exit().remove();
+            elements = elements.enter().append("g").attr("class", "chart-elements").merge(elements);
+
+            // Create groups
+            var groups = elements.selectAll(".element-group").data(_data, function (d) { return d.data.id; });
+            groups.exit().remove();
+            groups = groups.enter().append("g").attr("class", "element-group").merge(groups);
+
+            // For each element in group
+            groups.each(function (e, i) {
+
+              // Draw arcs
+              var arc$$1 = select(this).selectAll("path.node-arc").data([e], function(d) { return d.data.id; });
+              arc$$1.exit().remove();
+              arc$$1 = arc$$1.enter().append('path').attr("class", "node-arc").merge(arc$$1);
+              arc$$1
+                .style('fill', function(d) { return d.data._color; })
+                .style('stroke', function(d) { return d.data._color; })
+                .transition()
+                  .attr("d", _var.arc);
+
+              // Draw text text
+              var text$$1 = select(this).selectAll(".node-text").data([e], function(d) { return d.data.id; });
+              text$$1.exit().remove();
+              text$$1 = text$$1.enter().append('text').attr("class", "node-text").merge(text$$1);
+              text$$1
+                .attr("transform", function(d) { return "translate(" + _var.labelArc.centroid(d) + ")"; })
+                .attr("dy", ".3em")
+                .attr("font-size", "12px")
+                .attr("text-anchor", function(d) { return (d.startAngle + d.endAngle)/2 > Math.PI ? "end" : "start"; })
+                .style('fill', function(d) { return d.data._color; })
+                .html(function(d) { return _var.format(d.data.x); });
+
+            });
+
+            // Event bindings
+            groups.on('mouseover', function(e) {
+
+              // Set hovered node
+              _var.hovered = e;
+
+              // Mouseover event
+              events$1()
+                ._var(_var)
+                .action("mouseover")
+                .node(e)
+                .run();
+
+            }).on('mouseout', function(e) {
+
+              // Reset hovered node
+              _var.hovered = null;
+
+              // Mouseout event
+              events$1()
+                ._var(_var)
+                .action("mouseout")
+                .run();
+
+            });
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','components','data'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const misc$1 = function () {
+
+    // Get attributes values
+    var _var      = undefined;
+
+    // Validate attributes
+    var validate = function(step$$1) {
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function(step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Update height based on title
+            var top = 0;
+            if(_var.data.title != null && _var.data.title !== "") { top += 35; }
+            if(_var.data.legend != null && _var.data.legend.isVisible != null && _var.data.legend.isVisible === true) { top += 30; }
+
+            // Update container
+            _var.container.d3.selectAll('.grid-background, .pie-chart').style('top', top + 'px');
+
+            // Has title flag
+            var hasTitle = _var.data.title != null && _var.data.title !== "";
+
+            // Draw title wrapper
+            var titleWrapper = _var.container.d3.selectAll(".title-wrapper").data(hasTitle ? ["title-wrapper"] : []); // svg:g
+            titleWrapper.exit().remove();
+            titleWrapper = titleWrapper.enter().append('div').attr('class', "title-wrapper").merge(titleWrapper);
+            titleWrapper
+              .style('width', '100%')
+              .style('height', '30px')
+              .style('margin', '0px 0px 5px 0px')
+              .style('padding', '6px 10px 5px')
+              .style('oveflow', 'hidden')
+              .style('white-space', 'nowrap')
+              .style('text-overflow', 'ellipsis')
+              .style('background-color', '#eee')
+              .style('color', '#666')
+              .style('font-size', '12px')
+              .html(_var.data.title);
+
+            // Has legend flag
+            var hasLegend = _var.data.legend != null && _var.data.legend.isVisible != null && _var.data.legend.isVisible === true;
+            var legendWrapper, innerWrapper;
+
+            // Draw legend wrapper
+            legendWrapper = _var.container.d3.selectAll(".legend-wrapper").data(hasLegend ? ["legend-wrapper"] : []); // svg:g
+            legendWrapper.exit().remove();
+            legendWrapper = legendWrapper.enter().append('div').attr('class', "legend-wrapper").merge(legendWrapper);
+            legendWrapper
+              .style('width', '100%')
+              .style('height', '30px')
+              .style('oveflow-y', 'hidden')
+              .style('oveflow-x', 'auto')
+              .style('padding-left', _var.margin.left + "px")
+              .each(function(d) {
+
+                // Draw legend wrapper
+                innerWrapper = select(this).selectAll(".legend-inner").data(hasLegend ? ["legend-inner"] : []); // svg:g
+                innerWrapper.exit().remove();
+                innerWrapper = innerWrapper.enter().append('div').attr('class', "legend-inner").merge(innerWrapper);
+                innerWrapper
+                  .style('width', 'auto')
+                  .style('height', '100%')
+                  .style('white-space', 'nowrap');
+
+              });
+
+            if(innerWrapper != null) {
+
+              // Initialize string
+              var string = "";
+              var stringObj = {};
+
+              // Iterate nodes
+              _var.data.data.forEach(function(d, i) {
+
+                // Get color
+                var fillColor = d.color == null ? "#666" : d.color;
+                var strokeColor = d.color == null ? "#666" : d.color;
+                var mutedColor = d._color == null ? "#bbb" : d._color;
+                var shape = 'rect';
+                var legend = _var.data.legend != null && _var.data.legend.text != null ? _var.data.legend.text : "{{name}}";
+                var legendStr = "";
+
+                // Add rect for obj
+                if(_var.muted) {
+                  legendStr += "<span class='"+shape+"' style='background-color:"+mutedColor+"; margin-right: -2px;'></span>";
+                }
+                legendStr += "<span class='"+shape+"' style='background-color:"+fillColor+" ; '></span><span class='name'>";
+                legendStr += shared.helpers.text.replaceVariables(legend, d);
+                legendStr += "</span>";
+
+                // If the legend str wasnt computed, add to legend
+                if(stringObj[legendStr] == null) {
+                  stringObj[legendStr] = true;
+                  string += legendStr;
+                }
+
+              });
+
+              // Update legend
+              innerWrapper.html(string);
+
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var','animation'].forEach(function(key) {
+
+      // Attach variables to validation function
+      validate[key] = function(_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function(_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const parse$1 = function () {
+
+    // Get attributes values
+    var _var = null;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+
+      switch (step$$1) {
+        case 'run': return true;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'run':
+
+            // Set nude colors if muted
+            _var.data.data.forEach(function(d, i) {
+              var value = Math.floor(255 - (67/_var.data.data.length * (_var.data.data.length-i)));
+              d._color = _var.muted ? "rgb("+value+","+value+","+value+")" : d.color;
+            });
+
+            // Parse metrics
+            if(_var.data != null && _var.data[_var.metric] != null) {
+
+              // Total
+              _var.data[_var.metric].total = sum(_var.data.data, function(d) {
+                return d[_var.metric] != null && !isNaN(+d[_var.metric]) ? +d[_var.metric] : 0;
+              });
+
+              // Value
+              if(['sum','median','mean','max','min'].indexOf(_var.data[_var.metric].value) !== -1) {
+                _var.data[_var.metric]._value = _var.format(d3[_var.data[_var.metric].value](_var.data.data, function(d) {
+                  return d[_var.metric] != null && !isNaN(+d[_var.metric]) ? +d[_var.metric] : 0;
+                }));
+              } else { _var.data[_var.metric]._value = _var.data[_var.metric].value; }
+
+            }
+
+            break;
+        }
+      }
+
+      return _var;
+    };
+
+    // Exposicao de variaveis globais
+    ['_var'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Executa a funcao chamando o parametro de step
+    main.run = _ => main('run');
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const pieChart = function () {
+
+    // Auxiliar Functions
+    var _id = 'vis-pie-chart-' + (Math.floor(Math.random() * ((1000000000 - 5) + 1)) + 5).toString();
+    var _var = null;
+    var animation = 900;
+    var container = null;
+    var colors = { main: shared.helpers.colors.main, d3: ordinal(category10) };
+    var data = [];
+    var height = null;
+    var margin = { top: 10, right: 10, bottom: 10, left: 10};
+    var metric = "x";
+    var width = null;
+
+    // Validate attributes
+    var validate = function (step$$1) {
+      switch (step$$1) {
+        case 'build':      return (container != null) && (selectAll(container).size() !== 0 || select(container).size() !== 0);
+        case 'initialize': return true;
+        case 'create':     return data != null && data.data != null && data.data.length > 0;
+        case 'elements':   return data != null && data.data != null && data.data.length > 0;
+        case 'misc':       return data != null && data.data != null && data.data.length > 0;
+        case 'parse':      return data != null && data.data != null && data.data.length > 0;
+        default: return false;
+      }
+    };
+
+    // Main function
+    var main = function (step$$1) {
+
+      // Validate attributes if necessary
+      if (validate(step$$1)) {
+
+        switch (step$$1) {
+
+          // Build entire visualizations
+          case 'build':
+
+            main('initialize');
+            main('parse');
+            main('create');
+            main('elements');
+            main('misc');
+            break;
+
+          // Initialize visualization variable
+          case 'initialize':
+
+            // Initializing
+            if (!_var) { _var = {};  }
+            _var =  initialize$1()
+              ._var(_var)
+              ._id((_var._id != null) ? _var._id : _id)
+              .animation(animation)
+              .container(container)
+              .colors(colors)
+              .data(data)
+              .height(height)
+              .margin(margin)
+              .metric(metric)
+              .width(width)
+              .run();
+            break;
+
+          // Parse data
+          case 'parse':
+
+            // Creating wrappers
+            _var =  parse$1()
+              ._var(_var)
+              .run();
+            break;
+
+
+          // Create initial elements
+          case 'create':
+
+            // Creating wrappers
+            _var =  create$3()
+              ._var(_var)
+              .run();
+            break;
+
+          // Setup elements
+          case 'elements':
+
+            // Creating wrappers
+            _var =  elements$1()
+              ._var(_var)
+              .data(_var.data.data)
+              .run();
+            break;
+
+          // Show misc elements
+          case 'misc':
+
+            // Running
+            _var =  misc$1()
+              ._var(_var)
+              .run();
+            break;
+
+        }
+      }
+
+      return _var;
+    };
+
+    // Expose global variables
+    ['_id', '_var', 'action', 'animation','container', 'colors', 'data', 'height', 'margin', 'metric', 'width'].forEach(function (key) {
+
+      // Attach variables to validation function
+      validate[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return validate;
+      };
+
+      // Attach variables to main function
+      return main[key] = function (_) {
+        if (!arguments.length) { eval(`return ${key}`); }
+        eval(`${key} = _`);
+        return main;
+      };
+    });
+
+    // Secondary functions
+    main.build = function (_) { return main("build"); };
+
+    // Execute the specific called function
+    main.run = function (_) { return main(_); };
+
+    return main;
+  };
+
+  // Initialize the visualization class
+  const initialize$2 = function () {
+
+    // Get attributes values
     var _id       = null;
     var _var      = null;
     var animation = 900;
@@ -30904,7 +31751,7 @@
   };
 
   // Initialize the visualization class
-  const create$3 = function () {
+  const create$4 = function () {
 
     // Get attributes values
     var _var = undefined;
@@ -30984,7 +31831,7 @@
     };
 
   // Initialize the visualization class
-  const events$1 = function () {
+  const events$2 = function () {
 
     // Get attributes values
     var _var       = null;
@@ -31164,7 +32011,7 @@
   };
 
   // Initialize the visualization class
-  const elements$1 = function () {
+  const elements$2 = function () {
 
     // Get attributes values
     var _var       = null;
@@ -31229,7 +32076,7 @@
                 _var.hovered = e;
 
                 // Mouseover event
-                events$1()
+                events$2()
                   ._var(_var)
                   .action("mouseover")
                   .node(e)
@@ -31241,7 +32088,7 @@
                 _var.hovered = null;
 
                 // Mouseout event
-                events$1()
+                events$2()
                   ._var(_var)
                   .action("mouseout")
                   .run();
@@ -31288,7 +32135,7 @@
   };
 
   // Initialize the visualization class
-  const misc$1 = function () {
+  const misc$2 = function () {
 
     // Get attributes values
     var _var      = undefined;
@@ -31487,7 +32334,7 @@
 
             // Initializing
             if (!_var) { _var = {};  }
-            _var = initialize$1()
+            _var = initialize$2()
               ._var(_var)
               ._id((_var._id != null) ? _var._id : _id)
               .animation(animation)
@@ -31513,7 +32360,7 @@
           case 'create':
 
             // Creating wrappers
-            _var = create$3()
+            _var = create$4()
               ._var(_var)
               .run();
             break;
@@ -31552,7 +32399,7 @@
           case 'elements':
 
             // Running
-            _var = elements$1()
+            _var = elements$2()
               ._var(_var)
               .run();
             break;
@@ -31561,7 +32408,7 @@
           case 'misc':
 
             // Running
-            _var = misc$1()
+            _var = misc$2()
               ._var(_var)
               .run();
             break;
@@ -31602,6 +32449,7 @@
   const vis = {
     donutChart,
     lineChart,
+    pieChart,
   };
 
   /** @namespace */

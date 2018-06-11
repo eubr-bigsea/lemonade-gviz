@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.pieChart.events = function () {
+const events = function () {
   "use strict";
 
   // Get attributes values
@@ -137,3 +141,5 @@ gViz.vis.pieChart.events = function () {
 
   return main;
 };
+
+export default events;

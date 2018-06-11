@@ -1,11 +1,15 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+import events from './events';
+
 // Initialize the visualization class
-gViz.vis.pieChart.misc = function () {
+const misc = function () {
   "use strict";
 
   // Get attributes values
   var _var      = undefined;
   var animation = 900;
-  var components = {};
 
   // Validate attributes
   var validate = function(step) {
@@ -103,7 +107,7 @@ gViz.vis.pieChart.misc = function () {
                 legendStr += "<span class='"+shape+"' style='background-color:"+mutedColor+"; margin-right: -2px;'></span>";
               }
               legendStr += "<span class='"+shape+"' style='background-color:"+fillColor+" ; '></span><span class='name'>";
-              legendStr += gViz.shared.helpers.text.replaceVariables(legend, d);
+              legendStr += shared.helpers.text.replaceVariables(legend, d);
               legendStr += "</span>";
 
               // If the legend str wasnt computed, add to legend
@@ -127,7 +131,7 @@ gViz.vis.pieChart.misc = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','animation','components'].forEach(function(key) {
+  ['_var','animation'].forEach(function(key) {
 
     // Attach variables to validation function
     validate[key] = function(_) {
@@ -149,3 +153,5 @@ gViz.vis.pieChart.misc = function () {
 
   return main;
 };
+
+export default misc;

@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.pieChart.create = function () {
+const create = function () {
   "use strict";
 
   // Get attributes values
@@ -45,7 +49,7 @@ gViz.vis.pieChart.create = function () {
           _var.g.attr("transform", `translate(${_var.margin.left + _var.width/2},${_var.margin.top + _var.height/2})`);
 
           // Draw background grid
-          gViz.shared.visualComponents.backgroundGrid()
+          shared.visualComponents.backgroundGrid()
             .id(_var._id)
             .height(_var.height + _var.margin.top + _var.margin.bottom)
             .width(_var.width + _var.margin.left + _var.margin.right)
@@ -55,7 +59,7 @@ gViz.vis.pieChart.create = function () {
             .run();
 
           // Draw shadow
-          gViz.shared.visualComponents.shadow()
+          shared.visualComponents.shadow()
             ._var(_var)
             .id(_var.shadowId)
             .filterUnits("objectBoundingBox")
@@ -92,3 +96,5 @@ gViz.vis.pieChart.create = function () {
 
   return main;
 };
+
+export default create;
