@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' type='text/css' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'>
+    <link rel='stylesheet' type='text/css' href='./dist/main.css'>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+      }
+
+      ._container {
+        margin-left: 25px;
+        margin-right: 25px;
+        position: relative;
+        border: solid 1px black;
+        top: 50%;
+        height: 60%;
+        transform: translate(0, -50%);
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <div class='_container' id='_container'></div>
+
+    <div class="loading-div">
+      <div class="loading-div-inner">
+        <div class="loader">
+          <i class='fa fa-spinner fa-pulse fa-3x'></i>
+        </div>
+      </div>
+    </div>
+
+    <script src='./dist/gviz-src.js'></script>
+    <script>
+      console.log(gViz);
+      gViz.shared.helpers.loading.show();
+    </script>
+  </body>
+</html>
