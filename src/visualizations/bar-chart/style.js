@@ -3,12 +3,11 @@ import $ from "jquery";
 import shared from "../../shared/shared";
 
 // Initialize the visualization class
-gViz.vis.verticalBarChart.style = function () {
+const style = function () {
   "use strict";
 
   // Get attributes values
   var _var      = undefined;
-  var components = {};
 
   // Validate attributes
   var validate = function(step) {
@@ -80,7 +79,7 @@ gViz.vis.verticalBarChart.style = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','components'].forEach(function(key) {
+  ['_var'].forEach(function(key) {
 
     // Attach variables to validation function
     validate[key] = function(_) {

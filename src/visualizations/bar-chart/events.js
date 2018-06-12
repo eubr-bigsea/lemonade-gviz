@@ -3,13 +3,12 @@ import $ from "jquery";
 import shared from "../../shared/shared";
 
 // Initialize the visualization class
-gViz.vis.verticalBarChart.events = function () {
+const events = function () {
   "use strict";
 
   // Get attributes values
   var _var       = null;
   var action     = 'mouseover';
-  var components = null;
   var node       = null;
 
   // Validate attributes
@@ -71,7 +70,6 @@ gViz.vis.verticalBarChart.events = function () {
 
               // Set bars component
               shared.visualComponents.tooltip()
-                ._var(_var)
                 .body(_var.data.tooltip != null && _var.data.tooltip.body != null ? _var.data.tooltip.body : "")
                 .muted(_var.data.tooltip != null && _var.data.tooltip.muted != null && _var.data.tooltip.muted === true)
                 .borderColor(nodeColor)
@@ -92,7 +90,6 @@ gViz.vis.verticalBarChart.events = function () {
 
               // Set bars component
               shared.visualComponents.tooltip()
-                ._var(_var)
                 .action("hide")
                 .run();
 
@@ -107,7 +104,7 @@ gViz.vis.verticalBarChart.events = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','action','components','node'].forEach(function (key) {
+  ['_var','action','node'].forEach(function (key) {
 
     // Attach variables to validation function
     validate[key] = function (_) {

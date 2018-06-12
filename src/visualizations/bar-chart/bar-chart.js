@@ -2,8 +2,17 @@ import * as d3 from "d3";
 import $ from "jquery";
 import shared from "../../shared/shared";
 
+import initialize from './initialize';
+import axis from './axis';
+import xScale from './x-scale';
+import yScale from './y-scale';
+import style from './style';
+import create from './create';
+import elements from './elements';
+import misc from './misc';
+
 // Initialize the visualization class
-gViz.vis.verticalBarChart = function () {
+const barChart = function () {
   "use strict";
 
   // Get attributes values
@@ -17,7 +26,6 @@ gViz.vis.verticalBarChart = function () {
   var height = null;
   var margin = { top: 5, right: 10, bottom: 30, left: 70 };
   var width = null;
-  var hover = null;
   var urlLocation = 'ask';
   var fullData = null;
 
@@ -66,7 +74,7 @@ gViz.vis.verticalBarChart = function () {
 
           // Initializing
           if (!_var) { _var = {};  }
-          _var = gViz.vis.verticalBarChart.initialize()
+          _var = initialize()
             ._var(_var)
             ._id((_var._id != null) ? _var._id : _id)
             .animation(animation)
@@ -74,11 +82,8 @@ gViz.vis.verticalBarChart = function () {
             .colors(colors)
             .data(data)
             .height(height)
-            .hover(hover)
             .margin(margin)
-            .totals(totals)
             .width(width)
-            .urlLocation(urlLocation)
             .run();
 
           break;
@@ -87,7 +92,7 @@ gViz.vis.verticalBarChart = function () {
         case 'style':
 
           // Styling
-          _var = gViz.vis.verticalBarChart.style()
+          _var = style()
             ._var(_var)
             .run();
           break;
@@ -96,7 +101,7 @@ gViz.vis.verticalBarChart = function () {
         case 'create':
 
           // Creating wrappers
-          _var = gViz.vis.verticalBarChart.create()
+          _var = create()
             ._var(_var)
             .run();
           break;
@@ -105,7 +110,7 @@ gViz.vis.verticalBarChart = function () {
         case 'xScale':
 
           // Creating
-          _var = gViz.vis.verticalBarChart.xScale()
+          _var = xScale()
             ._var(_var)
             .data(_var.data.data)
             .run();
@@ -115,7 +120,7 @@ gViz.vis.verticalBarChart = function () {
         case 'yScale':
 
           // Creating
-          _var = gViz.vis.verticalBarChart.yScale()
+          _var = yScale()
             ._var(_var)
             .data(_var.data.data)
             .run();
@@ -125,7 +130,7 @@ gViz.vis.verticalBarChart = function () {
         case 'axis':
 
           // Running
-          _var = gViz.vis.verticalBarChart.axis()
+          _var = axis()
             ._var(_var)
             .action('create')
             .run();
@@ -135,9 +140,8 @@ gViz.vis.verticalBarChart = function () {
         case 'elements':
 
           // Running
-          _var = gViz.vis.verticalBarChart.elements()
+          _var = elements()
             ._var(_var)
-            .components(gViz.vis.verticalBarChart)
             .data(_var.data.data)
             .run();
           break;
@@ -146,9 +150,8 @@ gViz.vis.verticalBarChart = function () {
         case 'misc':
 
           // Running
-          _var = gViz.vis.verticalBarChart.misc()
+          _var = misc()
             ._var(_var)
-            .components(gViz.vis.verticalBarChart)
             .run();
           break;
 
@@ -159,7 +162,7 @@ gViz.vis.verticalBarChart = function () {
   };
 
   // Expose global variables
-  ['_id', '_var', 'action', 'animation', 'container', 'colors', 'data', 'height', 'margin', 'width', 'totals', 'hover', 'urlLocation','fullData'].forEach(function (key) {
+  ['_id', '_var', 'action', 'animation', 'container', 'colors', 'data', 'height', 'margin', 'width', 'totals', 'urlLocation','fullData'].forEach(function (key) {
 
     // Attach variables to validation function
     validate[key] = function (_) {
@@ -183,7 +186,6 @@ gViz.vis.verticalBarChart = function () {
   main.run = function (_) { return main(_); };
 
   return main;
-
 }
 
-export default _init;
+export default barChart;

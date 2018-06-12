@@ -3,7 +3,7 @@ import $ from "jquery";
 import shared from "../../shared/shared";
 
 // Initialize the visualization class
-gViz.vis.verticalBarChart.create = function () {
+const create = function () {
   "use strict";
 
   // Get attributes values

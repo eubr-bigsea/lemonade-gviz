@@ -3,15 +3,13 @@ import $ from "jquery";
 import shared from "../../shared/shared";
 
 // Initialize the visualization class
-gViz.vis.verticalBarChart.bars = function () {
+const bars = function () {
   "use strict";
 
   // Get attributes values
   var _var       = null;
   var animation  = 900;
-  var components = {};
   var nodeObj    = null;
-  var nodeIndex  = 0;
   var node       = null;
 
   // Validate attributes
@@ -55,7 +53,6 @@ gViz.vis.verticalBarChart.bars = function () {
 
               // Set wrapper gradient
               shared.visualComponents.gradient()
-                ._var(_var)
                 .id("gradient-"+g.x+g.y)
                 .colors([
                   { offset:"0%", color: _var.data.colors[g.x] == null || _var.data.colors[g.x].fill == null ? "#666" : _var.data.colors[g.x].fill },
@@ -101,7 +98,6 @@ gViz.vis.verticalBarChart.bars = function () {
 
               // Set bars gradient
               shared.visualComponents.gradient()
-                ._var(_var)
                 .id("gradient-"+g.x+g.y)
                 .colors([
                   { offset:"0%", color: fillColor },
@@ -147,7 +143,7 @@ gViz.vis.verticalBarChart.bars = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','animation','components','nodeObj','nodeIndex','node'].forEach(function(key) {
+  ['_var','animation','nodeObj','node'].forEach(function(key) {
 
     // Attach variables to validation function
     validate[key] = function(_) {

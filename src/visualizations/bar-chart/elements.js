@@ -2,13 +2,15 @@ import * as d3 from "d3";
 import $ from "jquery";
 import shared from "../../shared/shared";
 
+import bars from './bars';
+import events from './events';
+
 // Initialize the visualization class
-gViz.vis.verticalBarChart.elements = function () {
+const elements = function () {
   "use strict";
 
   // Get attributes values
   var _var       = null;
-  var components = null;
   var data       = null;
 
   // Validate attributes
@@ -49,10 +51,8 @@ gViz.vis.verticalBarChart.elements = function () {
             .each(function (e, i) {
 
               // Mouseover event
-              components.bars()
+              bars()
                 ._var(_var)
-                .components(components)
-                .nodeIndex(i)
                 .nodeObj(this)
                 .node(e)
                 .run();
@@ -66,10 +66,9 @@ gViz.vis.verticalBarChart.elements = function () {
               _var.hovered = e;
 
               // Mouseover event
-              components.events()
+              events()
                 ._var(_var)
                 .action("mouseover")
-                .components(components)
                 .node(e)
                 .run();
 
@@ -79,10 +78,9 @@ gViz.vis.verticalBarChart.elements = function () {
               _var.hovered = null;
 
               // Mouseout event
-              components.events()
+              events()
                 ._var(_var)
                 .action("mouseout")
-                .components(components)
                 .run();
 
             });
@@ -101,7 +99,7 @@ gViz.vis.verticalBarChart.elements = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','components','data'].forEach(function (key) {
+  ['_var','data'].forEach(function (key) {
 
     // Attach variables to validation function
     validate[key] = function (_) {

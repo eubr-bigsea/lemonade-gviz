@@ -3,7 +3,7 @@ import $ from "jquery";
 import shared from "../../shared/shared";
 
 // Initialize the visualization class
-gViz.vis.verticalBarChart.yScale = function () {
+const yScale = function () {
   "use strict";
 
   // Get attributes values
@@ -134,4 +134,4 @@ gViz.vis.verticalBarChart.yScale = function () {
   return main;
 };
 
-export default y-scale;
+export default yScale;
