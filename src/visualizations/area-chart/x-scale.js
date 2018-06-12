@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.areaChart.xScale = function () {
+const xScale = function () {
   "use strict";
 
   // Get attributes values
@@ -30,7 +34,7 @@ gViz.vis.areaChart.xScale = function () {
           _var.xIsDate = (_var.data.x != null && _var.data.x.type === 'time' && _var.data.x.inFormat != null && _var.data.x.outFormat != null);
           _var.xIsNumber = (_var.data.x != null && _var.data.x.type === 'number' && _var.data.x.format != null);
           var xFmt = _var.xIsDate ? 'date' : (_var.xIsNumber ? 'number' : 'text');
-          _var.xFormat = gViz.shared.helpers[xFmt].parseFormat(_var.data == null ? null : _var.data.x);
+          _var.xFormat = shared.helpers[xFmt].parseFormat(_var.data == null ? null : _var.data.x);
 
           // Define scales
           if(_var.xIsDate) { _var.x = d3.scaleTime().range([0, _var.width]); }
@@ -159,3 +163,5 @@ gViz.vis.areaChart.xScale = function () {
 
   return main;
 };
+
+export default xScale;

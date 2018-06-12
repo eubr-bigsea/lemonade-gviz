@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.areaChart.initialize = function () {
+const initialize = function () {
   "use strict";
 
   // Get attributes values
@@ -7,7 +11,7 @@ gViz.vis.areaChart.initialize = function () {
   var _var      = null;
   var animation = 900;
   var container = null;
-  var colors = { main: gViz.shared.helpers.colors.main, aux: gViz.shared.helpers.colors.aux };
+  var colors = { main: shared.helpers.colors.main, aux: shared.helpers.colors.aux };
   var data      = [];
   var height    = null;
   var margin    = { top: 10, right: 10, bottom: 10, left: 10 };
@@ -55,7 +59,7 @@ gViz.vis.areaChart.initialize = function () {
 
           // Initialize tFormat
           var tFmt = _var.data != null && _var.data.t != null && _var.data.t.type === 'number' ? 'number' : 'date';
-          _var.tFormat = gViz.shared.helpers[tFmt].parseFormat(_var.data == null ? null : _var.data.z);
+          _var.tFormat = shared.helpers[tFmt].parseFormat(_var.data == null ? null : _var.data.z);
 
           // Define height and width
           _var.height = ((height != null) ? height : _var.container.clientRect.height) - (_var.margin.top + _var.margin.bottom);
@@ -112,3 +116,5 @@ gViz.vis.areaChart.initialize = function () {
 
   return main;
 };
+
+export default initialize;

@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.areaChart.events = function () {
+const events = function () {
   "use strict";
 
   // Get attributes values
@@ -93,7 +97,7 @@ gViz.vis.areaChart.events = function () {
                 _var.data.data.forEach(function(d) {
                   d.values.filter(function(v) { return v.parsedX === node.parsedX; }).forEach(function(v) {
                     _var.data.tooltip["_"+_var.data.tooltip.propagate].forEach(function(p) {
-                      _var.data.tooltip[_var.data.tooltip.propagate].push(gViz.shared.helpers.text.replaceVariables(p, _getTooltipObj(v)));
+                      _var.data.tooltip[_var.data.tooltip.propagate].push(shared.helpers.text.replaceVariables(p, _getTooltipObj(v)));
                     });
                   });
                 });
@@ -103,8 +107,7 @@ gViz.vis.areaChart.events = function () {
               var tooltipObj = _getTooltipObj(node);
 
               // Set tooltip component
-              gViz.shared.visualComponents.tooltip()
-                ._var(_var)
+              shared.visualComponents.tooltip()
                 .body(_var.data.tooltip != null && _var.data.tooltip.body != null ? _var.data.tooltip.body : "")
                 .borderColor(tooltipObj.color)
                 .hasImg(_var.data.tooltip != null && _var.data.tooltip.hasImg === true)
@@ -136,8 +139,7 @@ gViz.vis.areaChart.events = function () {
                 .style('opacity', 1);
 
               // Set bars component
-              gViz.shared.visualComponents.tooltip()
-                ._var(_var)
+              shared.visualComponents.tooltip()
                 .action("hide")
                 .run();
 
@@ -181,3 +183,5 @@ gViz.vis.areaChart.events = function () {
 
   return main;
 };
+
+export default events;

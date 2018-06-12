@@ -1,5 +1,19 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
+import initialize from './initialize';
+import axis from './axis';
+import xScale from './x-scale';
+import yScale from './y-scale';
+import style from './style';
+import create from './create';
+import elements from './elements';
+import misc from './misc';
+import parse from './parse';
+
 // Initialize the visualization class
-gViz.vis.areaChart = function () {
+const areaChart = function () {
   "use strict";
 
   // Get attributes values
@@ -8,7 +22,7 @@ gViz.vis.areaChart = function () {
   var action = 'build';
   var animation = 900;
   var container = null;
-  var colors = { main: gViz.shared.helpers.colors.main };
+  var colors = { main: shared.helpers.colors.main };
   var data = [];
   var height = null;
   var margin = { top: 10, right: 10, bottom: 35, left: 0 };
@@ -58,7 +72,7 @@ gViz.vis.areaChart = function () {
 
           // Initializing
           if (!_var) { _var = {};  }
-          _var = gViz.vis.areaChart.initialize()
+          _var =  initialize()
             ._var(_var)
             ._id((_var._id != null) ? _var._id : _id)
             .animation(animation)
@@ -75,7 +89,7 @@ gViz.vis.areaChart = function () {
         case 'parse':
 
           // Creating wrappers
-          _var = gViz.vis.areaChart.parse()
+          _var =  parse()
             ._var(_var)
             .run();
           break;
@@ -84,7 +98,7 @@ gViz.vis.areaChart = function () {
         case 'style':
 
           // Setting styles
-          _var = gViz.vis.areaChart.style()
+          _var =  style()
             ._var(_var)
             .run();
           break;
@@ -93,7 +107,7 @@ gViz.vis.areaChart = function () {
         case 'create':
 
           // Creating wrappers
-          _var = gViz.vis.areaChart.create()
+          _var =  create()
             ._var(_var)
             .run();
           break;
@@ -102,7 +116,7 @@ gViz.vis.areaChart = function () {
         case 'xScale':
 
           // Creating
-          _var = gViz.vis.areaChart.xScale()
+          _var =  xScale()
             ._var(_var)
             .data(_var.data.data)
             .run();
@@ -112,7 +126,7 @@ gViz.vis.areaChart = function () {
         case 'yScale':
 
           // Creating
-          _var = gViz.vis.areaChart.yScale()
+          _var =  yScale()
             ._var(_var)
             .data(_var.data.data)
             .run();
@@ -122,7 +136,7 @@ gViz.vis.areaChart = function () {
         case 'axis':
 
           // Running
-          _var = gViz.vis.areaChart.axis()
+          _var =  axis()
             ._var(_var)
             .action('create')
             .run();
@@ -132,9 +146,8 @@ gViz.vis.areaChart = function () {
         case 'elements':
 
           // Running
-          _var = gViz.vis.areaChart.elements()
+          _var =  elements()
             ._var(_var)
-            .components(gViz.vis.areaChart)
             .run();
           break;
 
@@ -142,9 +155,8 @@ gViz.vis.areaChart = function () {
         case 'misc':
 
           // Running
-          _var = gViz.vis.areaChart.misc()
+          _var =  misc()
             ._var(_var)
-            .components(gViz.vis.areaChart)
             .run();
           break;
 
@@ -179,5 +191,6 @@ gViz.vis.areaChart = function () {
   main.run = function (_) { return main(_); };
 
   return main;
+};
 
-}
+export default areaChart;

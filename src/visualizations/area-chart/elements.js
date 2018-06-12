@@ -1,10 +1,13 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.areaChart.elements = function () {
+const elements = function () {
   "use strict";
 
   // Get attributes values
   var _var       = null;
-  var components = null;
   var data       = null;
 
   // Validate attributes
@@ -70,7 +73,7 @@ gViz.vis.areaChart.elements = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','components','data'].forEach(function (key) {
+  ['_var','data'].forEach(function (key) {
 
     // Attach variables to validation function
     validate[key] = function (_) {
@@ -92,3 +95,5 @@ gViz.vis.areaChart.elements = function () {
 
   return main;
 };
+
+export default elements;

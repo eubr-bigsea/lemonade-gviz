@@ -1,4 +1,8 @@
-gViz.vis.areaChart.parse = function () {
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
+const parse = function () {
   "use strict";
 
   // Get attributes values
@@ -77,3 +81,5 @@ gViz.vis.areaChart.parse = function () {
 
   return main;
 };
+
+export default parse;
