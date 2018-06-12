@@ -1,6 +1,11 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+import L from 'leaflet';
+
 'use strict';
 
-gViz.vis.map.initialize = function() {
+const initialize = function() {
   // Get attributes values
   var _id         = null;
   var _var        = null;
@@ -61,6 +66,15 @@ gViz.vis.map.initialize = function() {
         // Map Mode
         _var.mode = _var.data.mode;
 
+        _var.icon = new L.Icon({
+          iconUrl: 'dist/imgs/marker-icon.png',
+          shadowUrl: 'dist/imgs/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+
         // parse int
         if(_var.mode.heatmap || _var.mode.points) {
           _var.data.data.forEach((point, idx) => {
@@ -101,3 +115,5 @@ gViz.vis.map.initialize = function() {
 
   return main;
 };
+
+export default initialize;

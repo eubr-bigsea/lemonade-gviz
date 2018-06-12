@@ -1,16 +1,26 @@
-'use strict';
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
+import initialize from './initialize';
+import misc from './misc';
+import create from './create';
+import tiles from './tiles';
+import renderMap from './render-map';
+import heatLayer from './heat-layer';
+import geoJsonLayer from './geojson-layer';
 
 // Initialize the visualization class
-gViz.vis.map = function () {
+const map = function () {
   // Auxiliar Functions
   var components = {
-    initialize:     gViz.vis.map.initialize,
-    misc:           gViz.vis.map.misc,
-    create:         gViz.vis.map.create,
-    tiles:          gViz.vis.map.tiles,
-    renderMap:      gViz.vis.map.renderMap,
-    heatLayer:      gViz.vis.map.heatLayer,
-    geoJsonLayer:   gViz.vis.map.geoJsonLayer,
+    initialize:     initialize,
+    misc:           misc,
+    create:         create,
+    tiles:          tiles,
+    renderMap:      renderMap,
+    heatLayer:      heatLayer,
+    geoJsonLayer:   geoJsonLayer,
   };
 
   // Get attributes values
@@ -62,7 +72,7 @@ gViz.vis.map = function () {
 
           if (!_var) { _var = {};  }
 
-          //_var = gViz.vis.map.initialize()
+          //_var = const initialize()
           _var = components.initialize()
             ._var(_var)
             ._id((_var._id != null) ? _var._id : _id)
@@ -133,7 +143,6 @@ gViz.vis.map = function () {
           // Running
           _var = components.misc()
             ._var(_var)
-            .components(components)
             .run();
           break;
       }
@@ -172,3 +181,5 @@ gViz.vis.map = function () {
 
   return main;
 };
+
+export default map;

@@ -1,5 +1,10 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+import L from 'leaflet';
+
 // Initialize the visualization class
-gViz.vis.map.renderMap = function () {
+const renderMap = function () {
   "use strict";
 
   // Get attributes values
@@ -50,3 +55,5 @@ gViz.vis.map.renderMap = function () {
 
   return main;
 };
+
+export default renderMap;

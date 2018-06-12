@@ -1,4 +1,9 @@
-gViz.vis.map.tiles = function() {
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+import L from 'leaflet';
+
+const tiles = function() {
   "use strict";
 
   // Get attributes values
@@ -44,3 +49,5 @@ gViz.vis.map.tiles = function() {
 
   return main;
 };
+
+export default tiles;

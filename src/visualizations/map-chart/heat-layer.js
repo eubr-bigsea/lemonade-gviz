@@ -1,5 +1,11 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+import L from 'leaflet';
+//import L.heatlayer from 'leaflet.heat'
+
 // Initialize the visualization class
-gViz.vis.map.heatLayer = function () {
+const heatLayer = function () {
   "use strict";
 
   // Get attributes values
@@ -104,10 +110,11 @@ gViz.vis.map.heatLayer = function () {
 
             _var.data.data.forEach(function(point) {
               var tooltip = point.name;
-              var marker = L.marker(point);
+              var marker = L.marker(point, {
+                icon: _var.icon
+              });
 
               if(tooltip) { marker.bindPopup(tooltip); }
-
               marker.addTo(_var.pointsLayer);
             });
           }
@@ -139,3 +146,5 @@ gViz.vis.map.heatLayer = function () {
 
   return main;
 };
+
+export default heatLayer;

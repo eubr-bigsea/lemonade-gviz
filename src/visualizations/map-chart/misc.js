@@ -1,10 +1,13 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.map.misc = function () {
+const misc = function () {
   "use strict";
 
   // Get attributes values
   var _var      = undefined;
-  var components = {};
 
   // Main function
   var main = function(step) {
@@ -92,7 +95,7 @@ gViz.vis.map.misc = function () {
   };
 
   // Exposicao de variaveis globais
-  ['_var','components'].forEach(function(key) {
+  ['_var'].forEach(function(key) {
     // Attach variables to main function
     return main[key] = function(_) {
       if (!arguments.length) { eval(`return ${key}`); }
@@ -106,3 +109,5 @@ gViz.vis.map.misc = function () {
 
   return main;
 };
+
+export default misc;

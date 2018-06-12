@@ -1,5 +1,9 @@
+import * as d3 from "d3";
+import $ from "jquery";
+import shared from "../../shared/shared";
+
 // Initialize the visualization class
-gViz.vis.map.create = function() {
+const create = function() {
   "use strict";
 
   // Get attributes values
@@ -46,3 +50,5 @@ gViz.vis.map.create = function() {
 
   return main;
 };
+
+export default create;

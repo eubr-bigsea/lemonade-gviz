@@ -4,6 +4,7 @@ import lineChart from './line-chart/line-chart';
 import scatterPlot from './scatterplot/scatterplot';
 import barChart from './bar-chart/bar-chart';
 import areaChart from './area-chart/area-chart';
+import map from './map-chart/map-chart';
 
 const vis = {
   donutChart,
@@ -12,6 +13,7 @@ const vis = {
   scatterPlot,
   barChart,
   areaChart,
+  map,
 };
 
 export default vis;
